@@ -12,7 +12,11 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+	
+	$x = AppConfig::get('site.unmessage');
+	dd($x);
+
+    return $x;
 });
 
 /*

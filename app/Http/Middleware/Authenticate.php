@@ -17,13 +17,25 @@ class Authenticate
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        if (Auth::guard($guard)->guest()) {
-            if ($request->ajax()) {
-                return response('Unauthorized.', 401);
-            } else {
-                return redirect()->guest('login');
+        if ($guard == 'api'){
+            if (Auth::guest()) {
+                return response('Unauthorized.!', 401);
+            }else{
+                if (!$request->ajax())
+                {
+                  return response('Bad request.', 400);  
+                }
+            }
+        }else{
+            if (Auth::guard($guard)->guest()) {
+                if ($request->ajax()) {
+                    return response('Unauthorized.', 401);
+                } else {
+                    return redirect()->guest('login');
+                }
             }
         }
+        
 
         return $next($request);
     }

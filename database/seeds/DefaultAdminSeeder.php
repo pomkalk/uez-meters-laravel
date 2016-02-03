@@ -16,5 +16,10 @@ class DefaultAdminSeeder extends Seeder
         	'email'=>'admin@admin.org',
         	'password'=>bcrypt('nimda')
         ]);
+         DB::table('users')->insert([
+            'name'=>'demo_user',
+            'email'=>'asd@admin.org',
+            'password'=>bcrypt('nimda')
+        ]);
     }
 }

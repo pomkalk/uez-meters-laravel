@@ -9,7 +9,7 @@ class Apartment extends Model
     public $timestamps = false;
 
     public function building(){
-    	return $this->belongsTo('App\Building','id');
+    	return $this->belongsTo('App\Building','building_id');
     }
 
     public function meters(){

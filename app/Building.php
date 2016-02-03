@@ -9,7 +9,7 @@ class Building extends Model
     public $timestamps = false;
 
     public function street(){
-    	return $this->belongsTo('App\Street', 'id');
+    	return $this->belongsTo('App\Street', 'street_id');
     }
 
     public function apartments(){

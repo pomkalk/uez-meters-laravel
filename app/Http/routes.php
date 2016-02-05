@@ -27,5 +27,15 @@ Route::get('/', function () {
 */
 
 Route::group(['middleware' => ['web']], function () {
-    //
+    Route::get('admin/login', 'AdminController@getLogin');
+	Route::post('admin/login', 'AdminController@postLogin');
+	Route::get('admin/logout', 'AdminController@getLogout');
+});
+
+
+Route::group(['middleware' => ['admin']], function () {
+	
+    Route::get('admin', 'AdminController@getAdmin');
+
+
 });

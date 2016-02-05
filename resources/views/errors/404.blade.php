@@ -67,7 +67,7 @@ body{
 			<p>Ой - такая страница не найдена!</p>
 			<img src="{{ asset('img/404page.png') }}"/>
 			<div class="sub">
-			  <p><a href="{{ url('/') }}">Back </a></p>
+			  <p><a href="{{ url('/') }}">Вернуться назад</a></p>
 			</div>
 	</div>
  </div>	

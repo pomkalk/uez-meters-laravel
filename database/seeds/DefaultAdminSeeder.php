@@ -13,8 +13,8 @@ class DefaultAdminSeeder extends Seeder
     {
         DB::table('users')->insert([
         	'name'=>'administrator',
-        	'email'=>'admin@admin.org',
-        	'password'=>bcrypt('nimda')
+        	'email'=>env('ADMIN_DEFAULT_EMAIL','admin@admin.org'),
+        	'password'=>bcrypt(env('ADMIN_DEFAULT_PASSWORD','nimda'))
         ]);
     }
 }

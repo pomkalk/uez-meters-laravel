@@ -3,70 +3,74 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Административная панель</title>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
-	<link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+	<link rel="stylesheet" href="{{ asset('css/admin/styles.css') }}">
 </head>
 <body>
-
-<div class="container">	
-	<div class="row">
-		<div class="col-md-offset-4 col-md-4 login-form-header">
-			<h4 class="text-center">
-				<strong>Административная панель</strong>
-			</h4>
-		</div>	
-	</div>
-	<div class="row">
-		<div class="col-md-offset-4 col-md-4  login-form">
-			<form action="{{ url('admin/login') }}" method="post">
-				{{ csrf_field() }}
-				<div class="form-group">
-					<label for="email">Электронная почта</label>
-					<input type="email" id="email" name="email" class="form-control" placeholder="Электронная почта" value="{{ old('email') }}">
-					
-				</div>
-				<div class="form-group">
-					<label for="password">Пароль</label>
-					<input type="password" id="password" name="password" class="form-control" placeholder="Пароль">
-				</div>
-				<div class="text-right">
-					<button class="btn btn-primary btn-block" type="submit">Войти</button>
-				</div>
-			</form>
+	<div class="wrapper">
+		<div class="top-margin">
 		</div>
-	</div>	
-</div>		
-<script src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
-<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>	
-<script src="{{ asset('js/bootstrap-notify.min.js') }}"></script>
-<script type="text/javascript">
-	$(function(){
-		@if (count($errors)>0)
-var errors = {!! json_encode($errors->all()) !!};
-		@else
-var errors = undefined;
-		@endif
-		
-	  	for (i in errors){
-			$.notify({
-				message: errors[i]
-			},{
-				type: 'danger',
-				delay: 5000,
-				timer: 1000,
-				placement:{
-					from: 'bottom',
-					align: 'center'
-				},
-				animate: {
-					enter: 'animated fadeInDown',
-					exit: 'animated fadeOutUp'
+		<div class="header-line">
+			<div class="container">
+				<div class="header-title">
+					<img src="{{ asset('img/admin/login-marker.png') }}" height="45" width="45" alt="marker">
+					Административная панель
+				</div>
+			</div>
+		</div>
+		<div class="errors">
+			<button class="close">Закрыть</button>
+			<div class="container">
+			</div>
+		</div>
+		<div class="content">
+			<div class="container">
+				<div class="form-panel">
+					<div class="shadow"></div>
+					<div class="form">
+						<form action="{{ url('admin/login') }}" method="post">
+							{{ csrf_field() }}
+							<div class="form-group">
+								<label for="email">E-mail</label>
+								<input type="email" name="email" id="email" value="{{ old('email') }}" autofocus>
+							</div>
+
+							<div class="form-group">
+								<label for="password">Пароль</label>
+								<input type="password" name="password" id="password">
+							</div>
+
+							<div class="form-submit">
+								<button type="submit">Войти</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			@if (count($errors)>0)
+				var errors = {!! json_encode($errors->all()) !!}
+			@else
+				var errors = undefined;
+			@endif
+			
+			//var errors = undefined;
+			if (errors){
+				for (i in errors)
+				{
+					$('<div>',{html:errors[i]}).appendTo('.errors .container');
 				}
+				$('.errors').fadeIn('slow');
+				setTimeout(function(){ $('.errors').fadeOut('slow'); },3000);	
+			}
+
+			$('.errors .close').click(function(){
+				$('.errors').fadeOut('slow');
 			});
-		}
-	})
-</script>
+		})
+	</script>
 </body>
 </html>

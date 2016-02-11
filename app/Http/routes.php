@@ -11,9 +11,9 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 /*
 |--------------------------------------------------------------------------
@@ -27,7 +27,14 @@ Route::get('/', function () {
 */
 
 Route::group(['middleware' => ['web']], function () {
-    Route::get('admin/login', 'AdminController@getLogin');
+	//users block
+	Route::get('/', 'MainController@index');
+	Route::get('not-available', function(){
+		return view('not-available');
+	});
+	
+	//administrator block
+    Route::get('admin/login', ['middleware'=>'guest', 'uses'=>'AdminController@getLogin']);
 	Route::post('admin/login', 'AdminController@postLogin');
 	Route::get('admin/logout', 'AdminController@getLogout');
 });
@@ -36,6 +43,8 @@ Route::group(['middleware' => ['web']], function () {
 Route::group(['middleware' => ['admin']], function () {
 	
     Route::get('admin', 'AdminController@getAdmin');
+    Route::get('admin/settings', 'AdminController@getSettings');
+    Route::post('admin/settings', 'AdminController@postSettings');
 
 
 });

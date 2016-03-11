@@ -21,12 +21,6 @@
 	<nav class="navbar">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<button type="button" class="navbar-toggle collapsed">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
 				<span class="navbar-brand" href="{{url('/')}}">ООО "УЕЗ ЖКУ г. Ленинска-Кузнецкого"</span>
 			</div>
 		</div>

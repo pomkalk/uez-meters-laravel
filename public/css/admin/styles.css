@@ -2,9 +2,12 @@ body{
 	padding-bottom: 70px;
 }
 
-@media only screen and (max-width: 768px) {
+@media (max-width: 768px) {
 	#side-menu{
 		display: none;
+	}
+	.navbar-brand{
+		font-size: 0.9em;
 	}
 }
 

@@ -11,6 +11,11 @@ use Auth;
 use Validator;
 use AppConfig;
 use Carbon\Carbon;
+use App\User;
+use Hash;
+use Storage;
+use App\MeterUploads;
+use File;
 
 class AdminController extends Controller
 {
@@ -105,5 +110,54 @@ class AdminController extends Controller
     			return response('Неизвестный запрос',400);
     			break;
     	}
+    }
+
+    public function getChangepassword(){
+    	return view('admin.changepassword');
+    }
+
+    public function postChangepassword(Request $request){
+		$this->validate($request,[
+			'old_pass'=>'required',
+			'new_pass'=>'required|min:6',
+			'new_repeat'=>'required|same:new_pass'
+		],[
+			'old_pass.required'=>'Поле "Старый пароль" обязательно для заполнения',
+			'new_pass.required'=>'Поле "Новый пароль" обязательно для заполнения',
+			'new_pass.min'=>'Минимальная длинна пароля 6 символов',			
+			'new_repeat.required'=>'Поле "Новый пароль еще раз" обязательно для заполнения',
+			'same'=>'Пароль не совпадает',
+		]);
+
+		$user = User::where('email',Auth::user()->email)->first();
+		if (Hash::check($request->input('old_pass'), $user->password)){
+			$user->password = bcrypt($request->input('new_pass'));
+			$user->save();
+	    	return redirect('admin/changepassword')->with(['success'=>'Пароль успешно изменен!']);
+		}
+		return redirect('admin/changepassword')->withErrors('Неверно указан действующий пароль');
+    }
+
+
+    public function getDatabase(){
+        return view('admin.database');
+    }
+
+    public function postDatabaseUpload(Request $request){
+        $validator = Validator::make($request->all(),['meters_file'=>'required|mimes:zip']);
+        if ($validator->fails())       
+        {
+            return response('Ошибка загрузки файла',400);
+        }
+
+        $f = $request->file('meters_file');
+        $file = new MeterUploads();
+        $file->name=$f->getFilename();
+        $file->uploaded_at = Carbon::now();
+        $file->file="meters_uploads/".uniqid();
+        $file->user_id = Auth::user()->id;
+        $file->save();
+
+        Storage::put($file->file, File::get($f));
     }
 }

@@ -27,6 +27,10 @@
 */
 
 Route::group(['middleware' => ['web']], function () {
+	Route::get('test',['middleware'=>'throttle:3,1','uses'=>function(){
+		return 'ok';
+	}]);
+
 	//users block
 	Route::get('/', 'MainController@index');
 	Route::get('not-available', function(){
@@ -43,8 +47,15 @@ Route::group(['middleware' => ['web']], function () {
 Route::group(['middleware' => ['admin']], function () {
 	
     Route::get('admin', 'AdminController@getAdmin');
+
     Route::get('admin/settings', 'AdminController@getSettings');
     Route::post('admin/settings', 'AdminController@postSettings');
 
+    Route::get('admin/changepassword', 'AdminController@getChangepassword');
+    Route::post('admin/changepassword', 'AdminController@postChangepassword');
+
+
+    Route::get('admin/database', 'AdminController@getDatabase');
+    Route::post('admin/database/upload', 'AdminController@postDatabaseUpload');
 
 });

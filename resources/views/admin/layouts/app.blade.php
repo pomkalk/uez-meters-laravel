@@ -29,6 +29,10 @@
 	<div class="container-fluid">
 		<div class="row">
 			<div id="side-menu" class="col-md-3 col-sm-3">
+				<div class="well well-sm">
+					 Пользователь: {{Auth::user()->name }} 
+					 <br><a href="{{url('admin/changepassword')}}">Сменить пароль</a>
+				</div>
 				<ul class="nav nav-pills nav-stacked">
 					<li role="presentation" class="{{ Request::is('admin')?'active':'' }}"><a href="{{ url('admin') }}">Dashboard</a></li>
 					<li role="presentation" class="{{ Request::is('admin/database')?'active':'' }}"><a href="{{ url('admin/database') }}">База данных</a></li>
@@ -47,9 +51,16 @@
 	@include('layouts.footer')
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script>
-	<script type="text/javascript" src="{{ asset('js/flat-ui.min.js') }}"></script>
+	<!-- <script type="text/javascript" src="{{ asset('js/flat-ui.min.js') }}"></script> -->
 	<script type="text/javascript" src="{{ asset('js/moment.js') }}"></script>	
 	<script type="text/javascript" src="{{ asset('js/bootstrap-editable.min.js') }}"></script>
-	<script type="text/javascript" src="{{ asset('js/admin/main.js') }}"></script>
+	<script type="text/javascript">
+		$(function(){
+			$(".navbar-toggle").click(function(){
+				$("#side-menu").slideToggle('slow');
+			});
+		});
+	</script>
+	@yield('script')
 </body>
 </html>

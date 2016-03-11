@@ -5,7 +5,7 @@
 		</span>
 		<div class="navbar-right">
 			<span class="navbar-text">
-				©Разработчик: Pomka inc. (email:<a href="mailto:pomkalk@gmail.com">pomkalk@gmail.com</a>)
+				Разработчик: Pomka inc. (email:<a href="mailto:pomkalk@gmail.com">pomkalk@gmail.com</a>)
 			</span>
 		</div>		
 	</div>

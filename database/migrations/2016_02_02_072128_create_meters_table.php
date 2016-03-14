@@ -14,13 +14,14 @@ class CreateMetersTable extends Migration
     {
         Schema::create('meters', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('meter_id');
             $table->integer('apartment_id')->unsigned();
             $table->integer('service_id')->unsigned();
             $table->integer('status_id')->unsigned();
-            $table->date('last_date')->nullabel();
-            $table->float('last_value')->nullabel();
-            $table->date('new_date')->nullabel();
-            $table->float('new_value')->nullabel();
+            $table->date('last_date')->nullable();
+            $table->float('last_value')->nullable();
+            $table->date('new_date')->nullable();
+            $table->float('new_value')->nullable();
         });
     }
 

@@ -15,7 +15,7 @@ class CreateMeterUploadsTable extends Migration
         Schema::create('meter_uploads', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->date('uploaded_at');
+            $table->timestamp('uploaded_at');
             $table->string('file');
             $table->string('data');
             $table->string('addresses');

@@ -33,6 +33,11 @@ Route::group(['middleware' => ['web']], function () {
 
 	//users block
 	Route::get('/', 'MainController@index');
+	Route::post('/', 'MainController@postIndex');
+	Route::get('street{id}', 'MainController@getBuilding');
+	Route::get('building{id}', 'MainController@getApartment');
+
+
 	Route::get('not-available', function(){
 		return view('not-available');
 	});
@@ -56,6 +61,9 @@ Route::group(['middleware' => ['admin']], function () {
 
 
     Route::get('admin/database', 'AdminController@getDatabase');
-    Route::post('admin/database/upload', 'AdminController@postDatabaseUpload');
+    Route::get('admin/database/add', 'AdminController@getDatabaseAdd');
+    Route::post('admin/database/add', 'AdminController@postDatabaseAdd');
+    Route::get('admin/database/delete/{id}', 'AdminController@getDelete');
+    Route::get('admin/database/activate/{id}', 'AdminController@getActivate');
 
 });

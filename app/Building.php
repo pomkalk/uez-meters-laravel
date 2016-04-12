@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Building extends Model
 {
+	public $incrementing = false;
     public $timestamps = false;
 
     public function street(){

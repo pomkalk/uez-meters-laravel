@@ -1,20 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-md-offset-3 col-md-6">
-			<div class="panel">
-				<div>
-					{{ AppConfig::get('work.unmessage') }}	
-				</div>
-				<div class="text-right">
-					<a href="http://uez-lk.ru">Вернуться на сайт УЕЗ ЖКУ</a>
-				</div>
-			</div>			
-		</div>
+<div class="ui piled segment">
+	<div class="ui horizontal divider">ВНИМАНИЕ</div>
+	{{ AppConfig::get('work.unmessage') }}	
+	<div class="ui divider"></div>
+	<div class="ui basic right aligned segment">
+		<a class="" href="http://uez-lk.ru">Вернуться</a>
 	</div>
+
+
 </div>
 
 @stop

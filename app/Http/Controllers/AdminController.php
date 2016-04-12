@@ -14,8 +14,8 @@ use Carbon\Carbon;
 use App\User;
 use Hash;
 use Storage;
-use App\MeterUploads;
 use File;
+use DB;
 
 class AdminController extends Controller
 {
@@ -140,24 +140,127 @@ class AdminController extends Controller
 
 
     public function getDatabase(){
-        return view('admin.database');
+        $uploads = \App\MeterFile::latest()->get();
+        return view('admin.database', ['files'=>$uploads]);
     }
 
-    public function postDatabaseUpload(Request $request){
-        $validator = Validator::make($request->all(),['meters_file'=>'required|mimes:zip']);
-        if ($validator->fails())       
-        {
-            return response('Ошибка загрузки файла',400);
-        }
+    public function getDatabaseAdd(){
+        return view('admin.addfile');
+    }
 
-        $f = $request->file('meters_file');
-        $file = new MeterUploads();
-        $file->name=$f->getFilename();
-        $file->uploaded_at = Carbon::now();
-        $file->file="meters_uploads/".uniqid();
-        $file->user_id = Auth::user()->id;
+    public function postDatabaseAdd(Request $request){
+        set_time_limit(0);
+        $this->validate($request, [
+                'name'=>'required',
+                'xml'=>'mimes:xml',
+            ]);
+
+        $file_name = 'meter_files/'.str_random(50);
+
+        $file = new \App\MeterFile();
+        $file->name = $request->input('name');
+        $file->file = $file_name;
+
+        Storage::put($file_name, File::get($request->file('xml')));
         $file->save();
 
-        Storage::put($file->file, File::get($f));
+        return redirect('admin/database');
     }
+
+    public function getDelete($id){
+        $file = \App\MeterFile::findOrFail($id);
+
+        $file->delete();
+
+        return redirect('admin/database');
+    }
+
+    public function getActivate($id){
+        $file = \App\MeterFile::findOrFail($id);
+
+        DB::table('meter_files')->update(['active'=>0]);
+        DB::table('streets')->delete();
+        DB::table('buildings')->delete();
+        DB::table('apartments')->delete();
+        DB::table('meters')->delete();
+
+        $streets = [];
+        $buildings = [];
+        $apartments = [];
+        $meters = [];
+
+        try
+        {
+            $xml = simplexml_load_string(Storage::get($file->file));
+            
+            foreach ($xml->data->street as $xml_street){
+                $street = [
+                    'id'=>$xml_street['id'],
+                    'name'=>$xml_street['name'],
+                    'prefix'=>$xml_street['prefix'],
+                ];
+                array_push($streets, $street);
+
+                foreach ($xml_street->building as $xml_building){
+                    $building = [
+                        'id'=>$xml_building['id'],
+                        'street_id'=>$xml_street['id'],
+                        'number'=>$xml_building['number'],
+                        'housing'=>$xml_building['housing'],
+                    ];
+                    array_push($buildings, $building);
+
+                    foreach($xml_building->apartment as $xml_apartment){
+                        $apartment = [
+                            'id'=>$xml_apartment['id'],
+                            'building_id'=>$xml_building['id'],
+                            'number'=>$xml_apartment['number'],
+                            'part'=>$xml_apartment['lit'],
+                            'people'=>$xml_apartment['people'],
+                            'ls'=>$xml_apartment['ls'],
+                        ];
+                        array_push($apartments, $apartment);
+
+                        foreach($xml_apartment->meter as $xml_meter){
+                            $meter = [
+                                'id'=>$xml_meter['id'],
+                                'meter_id'=>$xml_meter['mid'],
+                                'apartment_id'=>$xml_apartment['id'],
+                                'service_id'=>$xml_meter['service'],
+                                'status_id'=>$xml_meter['status'],
+                                'last_date'=>Carbon::parse($xml_meter['last_date']),
+                                'last_value'=>$xml_meter['last_value'],
+                            ];
+                            array_push($meters, $meter);
+                        }
+                    }
+                }
+            }
+
+
+            DB::table('streets')->insert($streets);
+            DB::table('buildings')->insert($buildings);
+            foreach (array_chunk($apartments, 100) as $part)
+                DB::table('apartments')->insert($part);
+            foreach (array_chunk($meters, 100) as $part)
+                DB::table('meters')->insert($part);            
+            
+        }catch (\Exception $e){
+            DB::table('meter_files')->update(['active'=>0]);
+            DB::table('streets')->delete();
+            DB::table('buildings')->delete();
+            DB::table('apartments')->delete();
+            DB::table('meters')->delete();
+            return redirect('admin/database')->withErrors($e->getMessage());
+        }
+
+        $file->active=true;
+        $file->save();
+        
+        
+        
+
+        return redirect('admin/database');
+    }
+
 }

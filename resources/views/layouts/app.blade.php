@@ -1,36 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="csrf-token" content="{{ csrf_token() }}">
-	<title>Ввод показаний</title>
-	<link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
-	<link rel="stylesheet" href="{{ asset('css/bootstrap-editable.css') }}">
-	<link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+    <meta charset="UTF-8">
+    <title>Ввод показаний УЕЗ ЖКУ г. Ленинска-Кузнецкого</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{asset('semantic/semantic.css')}}">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.1.js"></script>
+    <script type="text/javascript" src="{{asset('semantic/semantic.js')}}"></script>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
+    <style type="text/css">
+        body{
+            background-color: #DADADA;
+        }
+
+
+		@media screen and (max-height: 575px){
+			#rc-imageselect, .g-recaptcha {
+				transform:scale(0.77);
+				-webkit-transform:scale(0.77);
+				transform-origin:0 0;
+				-webkit-transform-origin:0 0;
+			}
+		}
+	</style>
+
 </head>
 <body>
-	<nav class="navbar navbar-default">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<a class="navbar-brand" href="{{url('/')}}">Ввод показаний индивидуальных приборов учета</a>
-			</div>
-		</div>
-	</nav>
-	<nav class="navbar">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<span class="navbar-brand" href="{{url('/')}}">ООО "УЕЗ ЖКУ г. Ленинска-Кузнецкого"</span>
-			</div>
-		</div>
-	</nav>	
-	
-	@yield('content')
+<div class="ui borderless stackable menu">
+	<div class="header item">
+		Ввод показаний индивидуальных приборов учета
+	</div>
+	<div class="right item">
+		<a href="http://uez-lk.ru" class="ui basic button">
+			<i class="left arrow icon"></i>
+			Вернтуться на сайт
+		</a>
+	</div>
+</div>
+<div class="ui secondary menu">
+	<div class="item">
+		ООО "УЕЗ ЖКУ г. Ленинска-Кузнецкого"
+	</div>
+</div>
 
-	@include('layouts.footer')
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	<script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script>
+<div class="ui centered grid">
+	<div class="six wide column">
+		@yield('content')
+	</div>
+</div>
 
+
+
+@include('layouts.footer')
 </body>
 </html>

@@ -17,6 +17,7 @@ class CreateBuildingsTable extends Migration
             $table->integer('street_id')->unsigned();
             $table->integer('number');
             $table->string('housing',10)->nullable();
+
         });
     }
 

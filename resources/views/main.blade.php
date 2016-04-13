@@ -5,7 +5,7 @@
 <div class="ui top attached secondary segment">
 	Укажите адрес
 </div>
-<div class="ui attached segment" style="margin-bottom: 40px">
+<div class="ui attached segment">
 	@if(count($errors)>0)
 		<div class="ui error message">
 			<ul>
@@ -15,7 +15,7 @@
 			</ul>
 		</div>
 	@endif
-	<form id="client-form" method="post" action="{{ url('/') }}" class="ui form">
+	<form id="client-form" method="post" action="{{ url('/') }}" class="ui form" autocomplete="off">
 	{{ csrf_field() }}
 	<div id="streets" class="field">
 		<label>Улица</label>
@@ -58,11 +58,11 @@
 	</div>		
 	<div id="ls" class="disabled field">
 		<label>Лицевой счет</label>
-		<input type="text" name="ls" placeholder="Лицевой счет">
+		<input type="number" name="ls" placeholder="Лицевой счет" >
 	</div>
 	<div id="space" class="disabled field">
 		<label>Площадь</label>
-		<input type="text" name="space" placeholder="Площадь">
+		<input type="number" name="space" placeholder="Площадь" step="any">
 	</div>	
 	<div class="ui segment">
 		<div align="center" class="g-recaptcha" data-sitekey="6LfjFxUTAAAAAIYJ4ljxOk1sXn0dU6nVggqh-3GJ" data-size="compact"></div>
@@ -92,6 +92,12 @@ $(function(){
 		$('#space input').val('');
 		$('#ls').removeClass('disabled');
 		$('#space').removeClass('disabled');
+		@if (old('ls'))
+			$('#ls input').val('{{old("ls")}}');
+		@endif
+		@if (old('space'))
+			$('#space input').val('{{old("space")}}');
+		@endif				
 	}
 
 	var onBuildingChange = function(value, text, $item){
@@ -121,7 +127,9 @@ $(function(){
 			});
 			$('#apartments .selection.dropdown').removeClass('loading');
 			$('#apartments').removeClass('disabled');
-
+			@if (old('apartment'))
+				$('#apartments .selection.dropdown').dropdown('set selected', '{{ old("apartment") }}');
+			@endif
 		},'json');		
 	}
 
@@ -152,7 +160,9 @@ $(function(){
 			});
 			$('#buildings .selection.dropdown').removeClass('loading');
 			$('#buildings').removeClass('disabled');
-
+			@if (old('building'))
+				$('#buildings .selection.dropdown').dropdown('set selected', '{{ old("building") }}');
+			@endif
 		},'json');
 	}
 
@@ -174,9 +184,7 @@ $(function(){
 	});
 
 	@if(count($errors)>0)
-		
-		$('#streets .dropdown').dropdown('set selected', '{{ old("street") }}');
-		
+		$('#streets .selection.dropdown').dropdown('set selected', '{{ old("street") }}');
 	@endif
 
 })

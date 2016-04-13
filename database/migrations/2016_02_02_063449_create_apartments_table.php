@@ -19,6 +19,7 @@ class CreateApartmentsTable extends Migration
             $table->string('part')->nullable();
             $table->integer('people')->default(0);
             $table->integer('ls');
+            $table->float('space');
 
         });
     }

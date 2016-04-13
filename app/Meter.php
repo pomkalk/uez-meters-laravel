@@ -20,4 +20,11 @@ class Meter extends Model
     public function status(){
     	return $this->belongsTo('App\Status','status_id');
     }
+
+    public function getLastDateAttribute($value){
+        $date = \Carbon\Carbon::parse($value);
+        $monthes = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь',];
+        $text_date = $monthes[$date->month-1].' '.$date->year;
+        return $text_date;
+    }
 }

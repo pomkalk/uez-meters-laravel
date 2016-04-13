@@ -169,6 +169,8 @@ class AdminController extends Controller
 
     public function getDelete($id){
         $file = \App\MeterFile::findOrFail($id);
+        $file->active = 0;
+        $file->save();
 
         $file->delete();
 
@@ -183,6 +185,7 @@ class AdminController extends Controller
         DB::table('buildings')->delete();
         DB::table('apartments')->delete();
         DB::table('meters')->delete();
+        DB::table('services')->delete();
 
         $streets = [];
         $buildings = [];
@@ -195,41 +198,42 @@ class AdminController extends Controller
             
             foreach ($xml->data->street as $xml_street){
                 $street = [
-                    'id'=>$xml_street['id'],
-                    'name'=>$xml_street['name'],
-                    'prefix'=>$xml_street['prefix'],
+                    'id'=>(string)$xml_street['id'],
+                    'name'=(string)>$xml_street['name'],
+                    'prefix'=>(string)$xml_street['prefix'],
                 ];
                 array_push($streets, $street);
 
                 foreach ($xml_street->building as $xml_building){
                     $building = [
-                        'id'=>$xml_building['id'],
-                        'street_id'=>$xml_street['id'],
-                        'number'=>$xml_building['number'],
-                        'housing'=>$xml_building['housing'],
+                        'id'=>(string)$xml_building['id'],
+                        'street_id'=>(string)$xml_street['id'],
+                        'number'=>(string)$xml_building['number'],
+                        'housing'=>(string)$xml_building['housing'],
                     ];
                     array_push($buildings, $building);
 
                     foreach($xml_building->apartment as $xml_apartment){
                         $apartment = [
-                            'id'=>$xml_apartment['id'],
-                            'building_id'=>$xml_building['id'],
-                            'number'=>$xml_apartment['number'],
-                            'part'=>$xml_apartment['lit'],
-                            'people'=>$xml_apartment['people'],
-                            'ls'=>$xml_apartment['ls'],
+                            'id'=>(string)$xml_apartment['id'],
+                            'building_id'=>(string)$xml_building['id'],
+                            'number'=>(string)$xml_apartment['number'],
+                            'part'=>(string)$xml_apartment['lit'],
+                            'people'=>(string)$xml_apartment['people'],
+                            'ls'=>(string)$xml_apartment['ls'],
+                            'space'=>str_replace(',', '.', (string)$xml_apartment['space']),
                         ];
                         array_push($apartments, $apartment);
 
                         foreach($xml_apartment->meter as $xml_meter){
                             $meter = [
-                                'id'=>$xml_meter['id'],
-                                'meter_id'=>$xml_meter['mid'],
-                                'apartment_id'=>$xml_apartment['id'],
-                                'service_id'=>$xml_meter['service'],
-                                'status_id'=>$xml_meter['status'],
-                                'last_date'=>Carbon::parse($xml_meter['last_date']),
-                                'last_value'=>$xml_meter['last_value'],
+                                'id'=>(string)$xml_meter['id'],
+                                'meter_id'=>(string)$xml_meter['mid'],
+                                'apartment_id'=>(string)$xml_apartment['id'],
+                                'service_id'=>(string)$xml_meter['service'],
+                                'status_id'=>(string)$xml_meter['status'],
+                                'last_date'=>Carbon::parse((string)$xml_meter['last_date']),
+                                'last_value'=>(string)$xml_meter['last_value'],
                             ];
                             array_push($meters, $meter);
                         }
@@ -245,12 +249,26 @@ class AdminController extends Controller
             foreach (array_chunk($meters, 100) as $part)
                 DB::table('meters')->insert($part);            
             
+            $services = [];
+
+            foreach ($xml->services->service as $xml_service){
+                $service = [
+                    'id'=>$xml_service['id'],
+                    'name'=>$xml_service['name'],
+                    'norm'=>$xml_service['norm'],
+                    'additional'=>$xml_service['additional'],
+                ];
+                array_push($services, $service);
+            }
+            DB::table('services')->insert($services);
+
         }catch (\Exception $e){
             DB::table('meter_files')->update(['active'=>0]);
             DB::table('streets')->delete();
             DB::table('buildings')->delete();
             DB::table('apartments')->delete();
             DB::table('meters')->delete();
+            DB::table('services')->delete();
             return redirect('admin/database')->withErrors($e->getMessage());
         }
 

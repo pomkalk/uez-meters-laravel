@@ -34,6 +34,8 @@ Route::group(['middleware' => ['web']], function () {
 	//users block
 	Route::get('/', 'MainController@index');
 	Route::post('/', 'MainController@postIndex');
+	Route::get('open', 'MainController@open');
+	Route::get('test', 'MainController@test');
 	Route::get('street{id}', 'MainController@getBuilding');
 	Route::get('building{id}', 'MainController@getApartment');
 

@@ -22,6 +22,16 @@
 				-webkit-transform-origin:0 0;
 			}
 		}
+
+		.ui.stackable.grid{
+			margin-bottom: 40px;
+		}
+
+		@media (max-width: 768px){
+			.ui.stackable.grid{
+				margin-bottom: 80px;
+			}			
+		}
 	</style>
 
 </head>
@@ -43,7 +53,7 @@
 	</div>
 </div>
 
-<div class="ui centered grid">
+<div class="ui stackable centered grid">
 	<div class="six wide column">
 		@yield('content')
 	</div>
@@ -53,4 +63,11 @@
 
 @include('layouts.footer')
 </body>
+<script type="text/javascript">
+	$(function(){
+		$(window).resize(function(){
+			console.log($(window).width());
+		});
+	})
+</script>
 </html>

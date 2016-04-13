@@ -44,6 +44,11 @@ class MainController extends Controller
     }    
 
     public function postIndex(Request $request){
+        $file = \App\MeterFile::where('active',1)->first();
+        if (!$file)
+            return redirect('/')->withErrors('Данные на загружены, обратитесь к администратору.');
+
+
         $this->validate($request, [
                 'street'=>'required|exists:streets,id',
                 'building'=>'required|exists:buildings,id',
@@ -78,7 +83,41 @@ class MainController extends Controller
 
         $apartment = \App\Apartment::find($request->input('apartment'));
         if ($apartment->ls != $request->input('ls'))
-            return redirect('/')->withErrors('Неверно указан лицевой счет.');              
+            return redirect('/')->withErrors('Неверно указан лицевой счет.')->withInputs();
+        $space = str_replace(',', '.', $request->input('space'));
 
+        if ($apartment->space != $request->input('space'))
+            return redirect('/')->withErrors('Неверно указана площадь.')->withInputs();
+
+        return redirect('open')->with('client',[
+                'file'=>$file->id,
+                'ls'=>$apartment->ls,
+                'apartment_id'=>$apartment->id,
+            ]);
+    }
+
+    public function open(){
+        $client = session('client');
+        if (!$client)
+            return redirect('/');
+        $apartment = \App\Apartment::find($client['apartment_id']);
+        $building = $apartment->building;
+        $street = $building->street;
+
+        $full_address = $street->prefix.'. '.$street->name.', д. '.$building->number.(($building->housing)?'/'.$building->housing:'').' кв. '.$apartment->number.(($apartment->part)?'/'.$apartment->part:'');
+
+        $meters = \App\Meter::where('apartment_id', $apartment->id)->orderBy('service_id')->get();
+
+        
+        
+
+        return view('open', [
+                'address' => $full_address,
+                'meters'=>$meters,
+            ]);
+    }
+
+    public function test(){
+        dd(session()->all());
     }
 }

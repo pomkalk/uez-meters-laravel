@@ -199,7 +199,7 @@ class AdminController extends Controller
             foreach ($xml->data->street as $xml_street){
                 $street = [
                     'id'=>(string)$xml_street['id'],
-                    'name'=(string)>$xml_street['name'],
+                    'name'=>(string)$xml_street['name'],
                     'prefix'=>(string)$xml_street['prefix'],
                 ];
                 array_push($streets, $street);

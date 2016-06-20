@@ -14,9 +14,28 @@ class MainController extends Controller
 		$this->middleware('site.access');
 	}
 
-    public function index(){
+    public function index(Request $request){
+        $c = $request->cookie('kvowner');
+        if ($c){
+            $tmp = explode(':', $c);
+            $ls = $tmp[0];
+            $space = $tmp[1];
+
+            $apartment = \App\Apartment::where('ls', $ls)->where('space', $space)->first();
+            if (!$apartment){
+                return redirect('/')->withCookie(\Cookie::forget('kvowner'));
+            }
+
+            return view('main', ['saved'=>true, 'apartment'=>$apartment]);
+        }
+
     	$streets = \App\Street::orderBy('name')->orderBy('prefix')->get();
-    	return view('main', ['streets'=>$streets]);
+    	return view('main', ['saved'=>false,'streets'=>$streets]);
+    }
+
+    public function changeAddress()
+    {
+        return redirect('/')->withCookie(\Cookie::forget('kvowner'));
     }
 
     public function getBuilding($id){
@@ -46,7 +65,7 @@ class MainController extends Controller
     public function postIndex(Request $request){
         $file = \App\MeterFile::where('active',1)->first();
         if (!$file)
-            return redirect('/')->withErrors('Данные на загружены, обратитесь к администратору.');
+            return redirect('/')->withErrors('Данные на загружены, обратитесь Вашу Управляющую организацию.');
 
 
         $this->validate($request, [
@@ -77,9 +96,9 @@ class MainController extends Controller
             ]);
         $response = $curl->response;
         if (!isset($response->success))
-            return redirect('/')->withErrors('Ошибка recaptcha, обратитесь в организацию.');
+            return redirect('/')->withErrors('Ошибка recaptcha, обратитесь в Вашу Управляющую организацию.');
         if (!$response->success)
-            return redirect('/')->withErrors('Ошибка recaptcha, обратитесь в организацию.');  
+            return redirect('/')->withErrors('Ошибка recaptcha, обратитесь в Вашу Управляющую организацию.');  
 
         $apartment = \App\Apartment::find($request->input('apartment'));
         if ($apartment->ls != $request->input('ls'))
@@ -89,11 +108,21 @@ class MainController extends Controller
         if ($apartment->space != $request->input('space'))
             return redirect('/')->withErrors('Неверно указана площадь.')->withInputs();
 
-        return redirect('open')->with('client',[
-                'file'=>$file->id,
-                'ls'=>$apartment->ls,
-                'apartment_id'=>$apartment->id,
-            ]);
+        if ($request->input('remember', false)){
+            return redirect('open')->with('client',[
+                    'file'=>$file->id,
+                    'ls'=>$apartment->ls,
+                    'apartment_id'=>$apartment->id,
+                ])->withCookie('kvowner',$request->input('ls').':'.$request->input('space'), 60*24*50 );
+        }else{
+            return redirect('open')->with('client',[
+                    'file'=>$file->id,
+                    'ls'=>$apartment->ls,
+                    'apartment_id'=>$apartment->id,
+                ]);            
+        }
+
+
     }
 
     public function open(){

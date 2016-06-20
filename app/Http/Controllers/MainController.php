@@ -86,7 +86,7 @@ class MainController extends Controller
                 'ls.integer'=>'Лицевой счет это целое число.',
                 'space.required'=>'Укажите площадь помещения.',
                 'space.numeric'=>'Площадь помещение должно быть числом.',
-                'g-recaptcha-response.required'=>'Нажмите на флажек подтверждения, что Вы не робот.',
+                'g-recaptcha-response.required'=>'Нажмите на флажок подтверждения, что Вы не робот.',
             ]);
 
         $curl = new \Curl\Curl();

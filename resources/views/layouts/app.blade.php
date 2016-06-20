@@ -54,9 +54,9 @@
 </div>
 
 <div class="ui stackable centered grid">
-	<div class="six wide column">
+	
 		@yield('content')
-	</div>
+	
 </div>
 
 

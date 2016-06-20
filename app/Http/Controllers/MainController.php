@@ -113,7 +113,7 @@ class MainController extends Controller
                     'file'=>$file->id,
                     'ls'=>$apartment->ls,
                     'apartment_id'=>$apartment->id,
-                ])->withCookie('kvowner',$request->input('ls').':'.$request->input('space'), 60*24*50 );
+                ])->withCookie('kvowner',$request->input('ls').':'.$request->input('space'), 60*24*30*3 );
         }else{
             return redirect('open')->with('client',[
                     'file'=>$file->id,
@@ -129,6 +129,11 @@ class MainController extends Controller
         $client = session('client');
         if (!$client)
             return redirect('/');
+
+        $file = \App\MeterFile::where('active',1)->first();
+        if (!$file)
+            return redirect('/')->withErrors('Данные на загружены, обратитесь Вашу Управляющую организацию.');
+
         $apartment = \App\Apartment::find($client['apartment_id']);
         $building = $apartment->building;
         $street = $building->street;
@@ -142,11 +147,22 @@ class MainController extends Controller
 
         return view('open', [
                 'address' => $full_address,
+                'apartment'=>$apartment,
+                'file_id'=>$file->id,
                 'meters'=>$meters,
             ]);
     }
 
-    public function test(){
-        dd(session()->all());
+    public function validate(Request $request)
+    {
+        $file = \App\MeterFile::where('active',1)->first();
+        if (!$file)
+            return json_encode(['success'=>false,'errors'=>['Данные на загружены, обратитесь Вашу Управляющую организацию.']]);
+
+        $sdata = $request->input('sdata', false);
+        if (!$sdata)
+            return json_encode(['success'=>false,'errors'=>['Ошибка в данных, обратитесь Вашу Управляющую организацию.']]);
+
+        
     }
 }

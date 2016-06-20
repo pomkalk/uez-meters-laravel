@@ -17,7 +17,7 @@ class CreateMetersTable extends Migration
             $table->integer('meter_id');
             $table->integer('apartment_id')->unsigned();
             $table->integer('service_id')->unsigned();
-            $table->integer('status_id')->unsigned();
+            $table->integer('status_id');
             $table->timestamp('last_date')->nullable();
             $table->float('last_value')->nullable();
 

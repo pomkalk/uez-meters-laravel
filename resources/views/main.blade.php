@@ -104,7 +104,13 @@
 			</div>		
 		</div>
 		@endif
-		<button type="submit" class="ui fluid green button">Найти адрес</button>
+		<button type="submit" class="ui fluid green button">
+		@if ($saved)
+			Открыть адрес
+		@else
+			Найти адрес
+		@endif
+		</button>
 		</form>
 	</div>
 </div>

@@ -1,0 +1,10 @@
+c:\users\pomka\documents\visual studio 2013\Projects\ConverterTo\ConverterTo\bin\Debug\ConverterTo.exe.config
+c:\users\pomka\documents\visual studio 2013\Projects\ConverterTo\ConverterTo\obj\Debug\ConverterTo.csprojResolveAssemblyReference.cache
+c:\users\pomka\documents\visual studio 2013\Projects\ConverterTo\ConverterTo\obj\Debug\ConverterTo.Form1.resources
+c:\users\pomka\documents\visual studio 2013\Projects\ConverterTo\ConverterTo\obj\Debug\ConverterTo.Properties.Resources.resources
+c:\users\pomka\documents\visual studio 2013\Projects\ConverterTo\ConverterTo\obj\Debug\ConverterTo.csproj.GenerateResource.Cache
+c:\users\pomka\documents\visual studio 2013\Projects\ConverterTo\ConverterTo\bin\Debug\ConverterTo.exe
+c:\users\pomka\documents\visual studio 2013\Projects\ConverterTo\ConverterTo\bin\Debug\ConverterTo.pdb
+c:\users\pomka\documents\visual studio 2013\Projects\ConverterTo\ConverterTo\obj\Debug\ConverterTo.exe
+c:\users\pomka\documents\visual studio 2013\Projects\ConverterTo\ConverterTo\obj\Debug\ConverterTo.pdb
+C:\Users\pomka\documents\visual studio 2013\Projects\ConverterTo\ConverterTo\obj\Debug\ConverterTo.services.resources

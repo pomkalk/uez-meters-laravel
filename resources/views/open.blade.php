@@ -3,7 +3,12 @@
 @section('content')
 
 <div class="ten wide large screen twelve wide computer fiveteen wide tablet fiveteen wide mobile column">
-	<div id="errors-list" class="ui error message transition hidden">
+
+	<div id="success-message" class="ui success message transition hidden" style="text-align: justify;">
+		
+	</div>
+
+	<div id="errors-list" class="ui error message transition hidden" style="text-align: justify;">
 		
 	</div>
 	<div class="ui top attached secondary segment">
@@ -42,7 +47,7 @@
 							<td>{{ $meter->last_value }}</td>
 							<td>
 								<div class="ui fluid small input values">
-									<input id="meter[{{ $meter->id }}]" name="meter[{{ $meter->id }}]" type="number" step="any" style="text-align: center">
+									<input id="meter[{{ $meter->id }}]" name="meter[{{ $meter->id }}]" type="number" step="any" style="text-align: center" {!! array_key_exists($meter->id, $meter_values)?'value="'.$meter_values[$meter->id].'"':'' !!}>
 								</div>
 							</td>
 						</tr>
@@ -77,13 +82,18 @@
 		$('#save').click(function(){
 			var btn = $(this);
 			var form_data = $('#meters').serialize();
-			//btn.addClass('disabled loading');
-			//$('.ui.input.values').addClass('disabled');
+			btn.addClass('disabled loading');
+			$('.ui.input.values').addClass('disabled');
 
 			$.post("{{ url('save') }}", form_data, function(data){
-				if (data.response){
-
+				console.log(data.success);
+				if (data.success){
+					$('#errors-list').transition('hide');
+					btn.hide();
+					$('#success-message').html(data.message);
+					$('#success-message').transition('fade in');
 				}else{
+					console.log('wtf');
 					var errors = "";
 					for (i in data.errors){
 						error = data.errors[i];
@@ -93,10 +103,11 @@
 					for (i in data.efields){
 						$('input[name="meter['+data.efields[i]+']"]').closest('.ui.input.values').addClass('error');
 					}
+
 					$('#errors-list').html("<ul>"+errors+"</ul>");
 					$('#errors-list').transition('fade in');
-					//btn.removeClass('disabled loading');
-					//$('.ui.input.values').removeClass('disabled');				
+					btn.removeClass('disabled loading');
+					$('.ui.input.values').removeClass('disabled');				
 				}
 			}, 'json');
 

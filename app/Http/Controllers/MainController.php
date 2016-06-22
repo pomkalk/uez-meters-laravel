@@ -18,13 +18,31 @@ class MainController extends Controller
         $c = $request->cookie('kvowner');
         if ($c){
             $tmp = explode(':', $c);
-            $ls = $tmp[0];
-            $space = $tmp[1];
+            if (count($tmp)!=3)
+                return redirect('/')->withCookie(\Cookie::forget('kvowner'));
+            $ls = intval($tmp[0]);
+            $space = intval($tmp[1]);
+            $file_id = intval($tmp[2]); 
+
 
             $apartment = \App\Apartment::where('ls', $ls)->where('space', $space)->first();
             if (!$apartment){
+                \Log::info('1');
                 return redirect('/')->withCookie(\Cookie::forget('kvowner'));
             }
+            \Log::info('2');
+            $file = \App\MeterFile::where('active',1)->first();
+            if (!$file){
+                \Log::info('3');
+                return redirect('/')->withCookie(\Cookie::forget('kvowner'));
+            }else{
+                \Log::info('4');
+                if ($file->id != $file_id){
+                    \Log::info('5');
+                    return redirect('/')->withCookie(\Cookie::forget('kvowner'));
+                }
+            }
+
 
             return view('main', ['saved'=>true, 'apartment'=>$apartment]);
         }
@@ -113,7 +131,7 @@ class MainController extends Controller
                     'file'=>$file->id,
                     'ls'=>$apartment->ls,
                     'apartment_id'=>$apartment->id,
-                ])->withCookie('kvowner',$request->input('ls').':'.$request->input('space'), 60*24*30*3 );
+                ])->withCookie('kvowner',$request->input('ls').':'.$request->input('space').':'.$file->id, 60*24*30*3 );
         }else{
             return redirect('open')->with('client',[
                     'file'=>$file->id,
@@ -141,6 +159,13 @@ class MainController extends Controller
         $full_address = $street->prefix.'. '.$street->name.', д. '.$building->number.(($building->housing)?'/'.$building->housing:'').' кв. '.$apartment->number.(($apartment->part)?'/'.$apartment->part:'');
 
         $meters = \App\Meter::where('apartment_id', $apartment->id)->orderBy('service_id')->get();
+        $meter_ids = [];
+        foreach($meters as $m)
+            array_push($meter_ids, $m->id);
+        $old_values = \App\MeterValue::where('file_id',$file->id)->whereIn('meter_id',$meter_ids)->get();
+        $meter_values = [];
+        foreach($old_values as $ov)
+            $meter_values[$ov->meter_id] = $ov->value;
 
         session()->flash('can-save','1');
 
@@ -156,6 +181,7 @@ class MainController extends Controller
                 'file_id'=>$file->id,
                 'meters'=>$meters,
                 'show_info'=>$show_info,
+                'meter_values'=>$meter_values,
             ]);
     }
 
@@ -195,12 +221,15 @@ class MainController extends Controller
         $errorsFields = [];
         $saving = [];
 
+        $people = ($apartment->people<=0)?1:$apartment->people;
+
         foreach ($meters as $key => $value) {
             $meter = \App\Meter::where('id',$key)->where('apartment_id', $apartment->id)->first();
             if (!$meter)
                 array_push($errors, 'ER03:'.$key.' - системная ошибка, обратитесь Вашу Управляющую организацию и сообщите код ошибки.');
             if (empty($value))
                 continue;
+
             $val = floatval($value);
             if ($val<0){
                 array_push($errors, 'Показания счетчика <b>'.$meter->service->name.'</b> не могут быть отрицательными.');
@@ -208,15 +237,71 @@ class MainController extends Controller
                 continue;
             }
 
-            if ($meter->last_value > $val){
-                array_push($errors, 'Показания счетчика <b>'.$meter->service->name.'</b> не могут быть меньше предыдущих.');
-                array_push($errorsFields, $meter->id);
-                continue;
-            }
+            $norm = $meter->service->norm;
+            
+            if ($norm>0){
+                if ($meter->last_value > $val){
+                    array_push($errors, 'Показания счетчика <b>'.$meter->service->name.'</b> не могут быть меньше предыдущих.');
+                    array_push($errorsFields, $meter->id);
+                    continue;
+                }
 
+                $mx = $meter->service->additional;
+
+                $max_value = $meter->last_value + ( $people * $norm + $norm * $mx );
+
+                if ($val > $max_value){
+                    array_push($errors, 'К сожалению, показания счетчика <b>'.$meter->service->name.'</b> не могут превышать установленный предел, максимальное значение составляет&nbsp;<b>'.round($max_value,3).'</b>. Пожалуйста установите значение меньше или передайте показания по телефону.');
+                    array_push($errorsFields, $meter->id);
+                    continue;
+                }
+
+                $new_value = \App\MeterValue::where('file_id',$file_id)->where('meter_id', $key)->first();
+                if ($new_value){
+                    $new_value->date = \Carbon\Carbon::now();
+                    $new_value->value = $value;  
+                }else{
+                    $new_value = new \App\MeterValue();
+                    $new_value->file_id = $file_id;
+                    $new_value->meter_id = $key;
+                    $new_value->date = \Carbon\Carbon::now();
+                    $new_value->value = $value;    
+                }
+
+                array_push($saving, $new_value);
+
+            }else{
+                $new_value = \App\MeterValue::where('file_id',$file_id)->where('meter_id', $key)->first();
+                if ($new_value){
+                    $new_value->date = \Carbon\Carbon::now();
+                    $new_value->value = $value;  
+                }else{
+                    $new_value = new \App\MeterValue();
+                    $new_value->file_id = $file_id;
+                    $new_value->meter_id = $key;
+                    $new_value->date = \Carbon\Carbon::now();
+                    $new_value->value = $value;    
+                }
+
+                array_push($saving, $new_value);
+            }
         }
 
-        return json_encode(['success'=>false,'errors'=>$errors, 'efields'=>$errorsFields]);
+        if (count($errors)>0){
+            return json_encode(['success'=>false,'errors'=>$errors, 'efields'=>$errorsFields]);    
+        }else{
+
+            if (count($saving)>0){
+                foreach ($saving as $nv){
+                    $nv->save();
+                }
+            }else{
+                return json_encode(['success'=>false,'errors'=>['Вы не указали новые показания.'], 'efields'=>$errorsFields]);    
+            }
+            return json_encode(['success'=>true, 'message'=>'Показания успешно сохранены.']);    
+        }
+
+        
             
     }
 }

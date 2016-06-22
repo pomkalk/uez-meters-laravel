@@ -19,6 +19,7 @@ class DefaultConfigSeeder extends Seeder
 	        	['key'=>'work.e_date','value'=>'30'],
 	        	['key'=>'work.e_time','value'=>'24:00'],
 	        	['key'=>'work.unmessage','value'=>'Укажите сообщение для отображения, когда сайт не работает'],
+                ['key'=>'work.infometter','value'=>'Уточнить причину блокировки или приостановки счетчика вы можете по телефону в абонентском отделе ООО «УЕЗ&nbsp;ЖКУ г.&nbsp;Ленинска-Кузнецкого» - 49-2-49.'],
         	]);
     }
 }

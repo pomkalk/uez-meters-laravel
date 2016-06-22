@@ -142,19 +142,30 @@ class MainController extends Controller
 
         $meters = \App\Meter::where('apartment_id', $apartment->id)->orderBy('service_id')->get();
 
-        
-        
+        session()->flash('can-save','1');
+
+        $show_info = false;
+        foreach($meters as $m){
+            if ($m->status_id != 1)
+                $show_info = true;
+        }
 
         return view('open', [
                 'address' => $full_address,
                 'apartment'=>$apartment,
                 'file_id'=>$file->id,
                 'meters'=>$meters,
+                'show_info'=>$show_info,
             ]);
     }
 
-    public function valid(Request $request)
+    public function save(Request $request)
     {
+        if (!session()->has('can-save'))
+            return json_encode(['success'=>false,'errors'=>['Ошибка прав доступа на сохранение показаний, обратитесь Вашу Управляющую организацию.']]);
+
+        session()->flash('can-save','1');
+
         $file = \App\MeterFile::where('active',1)->first();
         if (!$file)
             return json_encode(['success'=>false,'errors'=>['Данные на загружены, обратитесь Вашу Управляющую организацию.']]);
@@ -179,8 +190,33 @@ class MainController extends Controller
         $ls = $apartment->ls;
 
         $meters = $request->input('meter');
-        dd($meters);
 
-        return json_encode(['success'=>false,'errors'=>['Контрольная ошибка']]);
+        $errors = [];
+        $errorsFields = [];
+        $saving = [];
+
+        foreach ($meters as $key => $value) {
+            $meter = \App\Meter::where('id',$key)->where('apartment_id', $apartment->id)->first();
+            if (!$meter)
+                array_push($errors, 'ER03:'.$key.' - системная ошибка, обратитесь Вашу Управляющую организацию и сообщите код ошибки.');
+            if (empty($value))
+                continue;
+            $val = floatval($value);
+            if ($val<0){
+                array_push($errors, 'Показания счетчика <b>'.$meter->service->name.'</b> не могут быть отрицательными.');
+                array_push($errorsFields, $meter->id);
+                continue;
+            }
+
+            if ($meter->last_value > $val){
+                array_push($errors, 'Показания счетчика <b>'.$meter->service->name.'</b> не могут быть меньше предыдущих.');
+                array_push($errorsFields, $meter->id);
+                continue;
+            }
+
+        }
+
+        return json_encode(['success'=>false,'errors'=>$errors, 'efields'=>$errorsFields]);
+            
     }
 }

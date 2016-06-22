@@ -7,7 +7,7 @@
 		
 	</div>
 	<div class="ui top attached secondary segment">
-		{{ $address }}
+		{{ $address }} (ЛС {{ $apartment->ls }})
 	</div>
 	<div class="ui attached segment" style="margin-bottom: 40px">
 		<table id="data-table" class="ui very basic selectable table">
@@ -41,7 +41,9 @@
 							<td>{{ $meter->last_date }}</td>
 							<td>{{ $meter->last_value }}</td>
 							<td>
-								<input id="meter[{{ $meter->id }}]" name="meter[{{ $meter->id }}]" type="number" step="any" style="width: 100%; text-align: center;">
+								<div class="ui fluid small input values">
+									<input id="meter[{{ $meter->id }}]" name="meter[{{ $meter->id }}]" type="number" step="any" style="text-align: center">
+								</div>
 							</td>
 						</tr>
 					@endif
@@ -54,17 +56,31 @@
 			<div id="save" class="ui green button">Сохранить</div>
 		</div>
 	</div>
+
+	@if ($show_info)
+	<div class="ui info message" style="text-align: justify;">
+		{{ AppConfig::get('work.infometter') }}
+	</div>
+	@endif
 </div>
 
 <script type="text/javascript">
 	$(function(){
+	@if ($show_info)
+		$('.ui.info.message').transition({
+    		animation : 'jiggle',
+    		duration  : 800,
+    		interval  : 200
+  		});
+	@endif
+		$('#meters').submit(false);
 		$('#save').click(function(){
 			var btn = $(this);
 			var form_data = $('#meters').serialize();
-			btn.addClass('disabled loading');
-			$('input[type=number]').attr('disabled','disabled');
+			//btn.addClass('disabled loading');
+			//$('.ui.input.values').addClass('disabled');
 
-			$.post("{{ url('validate') }}", form_data, function(data){
+			$.post("{{ url('save') }}", form_data, function(data){
 				if (data.response){
 
 				}else{
@@ -73,10 +89,14 @@
 						error = data.errors[i];
 						errors+="<li>"+error+"</li>";
 					}
+					$('.ui.input.values').removeClass('error');
+					for (i in data.efields){
+						$('input[name="meter['+data.efields[i]+']"]').closest('.ui.input.values').addClass('error');
+					}
 					$('#errors-list').html("<ul>"+errors+"</ul>");
 					$('#errors-list').transition('fade in');
-					btn.removeClass('disabled loading');
-					$('input[type=number]').removeAttr('disabled');					
+					//btn.removeClass('disabled loading');
+					//$('.ui.input.values').removeClass('disabled');				
 				}
 			}, 'json');
 

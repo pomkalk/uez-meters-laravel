@@ -40,7 +40,7 @@ Route::group(['middleware' => ['web']], function () {
 	Route::get('street{id}', 'MainController@getBuilding');
 	Route::get('building{id}', 'MainController@getApartment');
 
-	Route::post('validate', 'MainController@validate');
+	Route::post('validate', 'MainController@valid');
 
 	Route::get('not-available', function(){
 		return view('not-available');

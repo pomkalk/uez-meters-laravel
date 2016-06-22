@@ -3,7 +3,9 @@
 @section('content')
 
 <div class="ten wide large screen twelve wide computer fiveteen wide tablet fiveteen wide mobile column">
-	
+	<div id="errors-list" class="ui error message transition hidden">
+		
+	</div>
 	<div class="ui top attached secondary segment">
 		{{ $address }}
 	</div>
@@ -58,16 +60,24 @@
 	$(function(){
 		$('#save').click(function(){
 			var btn = $(this);
+			var form_data = $('#meters').serialize();
+			btn.addClass('disabled loading');
+			$('input[type=number]').attr('disabled','disabled');
 
-			//btn.addClass('disabled loading');
-			// $('input[type=number]').attr('disabled','disabled');
+			$.post("{{ url('validate') }}", form_data, function(data){
+				if (data.response){
 
-			$.post("{{ url('validate') }}", $('#meters').serialize(), function(data){
-
-				console.log(data);
-				btn.removeClass('disabled loading');
-				$('input[type=number]').removeAttr('disabled');
-
+				}else{
+					var errors = "";
+					for (i in data.errors){
+						error = data.errors[i];
+						errors+="<li>"+error+"</li>";
+					}
+					$('#errors-list').html("<ul>"+errors+"</ul>");
+					$('#errors-list').transition('fade in');
+					btn.removeClass('disabled loading');
+					$('input[type=number]').removeAttr('disabled');					
+				}
 			}, 'json');
 
 		});

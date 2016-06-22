@@ -153,7 +153,7 @@ class MainController extends Controller
             ]);
     }
 
-    public function validate(Request $request)
+    public function valid(Request $request)
     {
         $file = \App\MeterFile::where('active',1)->first();
         if (!$file)
@@ -163,6 +163,24 @@ class MainController extends Controller
         if (!$sdata)
             return json_encode(['success'=>false,'errors'=>['Ошибка в данных, обратитесь Вашу Управляющую организацию.']]);
 
-        
+        if ( strpos($sdata, ":") === false)
+            return json_encode(['success'=>false,'errors'=>['Ошибка в данных, обратитесь Вашу Управляющую организацию.']]);
+
+        $apartment_id = explode(':', $sdata)[0];
+        $file_id = explode(':', $sdata)[1];
+
+        if ($file->id != $file_id)
+            return json_encode(['success'=>false,'errors'=>['Данные на загружены, обратитесь Вашу Управляющую организацию.']]);
+
+        $apartment = \App\Apartment::find($apartment_id);
+        if (!$apartment)
+            return json_encode(['success'=>false,'errors'=>['Ошибка в данных, обратитесь Вашу Управляющую организацию.']]);
+
+        $ls = $apartment->ls;
+
+        $meters = $request->input('meter');
+        dd($meters);
+
+        return json_encode(['success'=>false,'errors'=>['Контрольная ошибка']]);
     }
 }

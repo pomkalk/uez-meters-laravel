@@ -33,7 +33,11 @@
 				<tr>
 					<td>Информационное сообщение, когда услуга не предоставляется</td>
 					<td><a href="#" class="settings-fields" data-type="textarea" data-emptytext="Пусто" data-pk='work.unmessage' data-url="{{url('admin/settings')}}" data-value="{{ $work_unmessage }}" data-params="{_token:'{{csrf_token()}}'}"></a></td>
-				</tr>				
+				</tr>
+				<tr>
+					<td>Информационное сообщение, когда счетчик заблокирован или приостановлен</td>
+					<td><a href="#" class="settings-fields" data-type="textarea" data-emptytext="Пусто" data-pk='work.infometter' data-url="{{url('admin/settings')}}" data-value="{{ $work_infometter }}" data-params="{_token:'{{csrf_token()}}'}"></a></td>
+				</tr>	
 			</tbody>
 		</table>	
 	</div>

@@ -59,6 +59,8 @@ class AdminController extends Controller
     	$settings['work_startdate'] = (new Carbon(AppConfig::get('work.s_date').Carbon::now()->format('.m.Y ').AppConfig::get('work.s_time')))->format('Y.m.d h:i');
     	$settings['work_enddate'] = (new Carbon(AppConfig::get('work.e_date').Carbon::now()->format('.m.Y ').AppConfig::get('work.e_time')))->format('Y.m.d h:i');
     	$settings['work_unmessage'] = AppConfig::get('work.unmessage');
+        $settings['work_infometter'] = AppConfig::get('work.infometter');
+        
 
 
     	return view('admin.settings', $settings);
@@ -106,6 +108,10 @@ class AdminController extends Controller
     			AppConfig::set($key,$value);
     			return response('',200);
     			break;
+            case 'work.infometter':
+                AppConfig::set($key,$value);
+                return response('',200);
+                break;                
     		default:
     			return response('Неизвестный запрос',400);
     			break;

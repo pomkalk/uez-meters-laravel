@@ -16,10 +16,13 @@ class SiteAccess
      */
     public function handle($request, Closure $next)
     {
-        $current = Carbon::now("+7");
-        $sd = new Carbon(AppConfig::get('work.s_date').Carbon::now()->format('.m.Y ').AppConfig::get('work.s_time'),'+7');
-        $ed = new Carbon(AppConfig::get('work.e_date').Carbon::now()->format('.m.Y ').AppConfig::get('work.e_time'),'+7');
-        
+        $start_day = AppConfig::get('work.s_date');
+        $end_day = AppConfig::get('work.e_date');
+
+        $current = Carbon::now();
+        $sd = new Carbon($start_day.Carbon::now()->format('.m.Y ').AppConfig::get('work.s_time'));
+        $ed = new Carbon($end_day.Carbon::now()->format('.m.Y ').AppConfig::get('work.e_time'));
+
         if (!$current->between($sd,$ed))
         {
             return view('no-access');

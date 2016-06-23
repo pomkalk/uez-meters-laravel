@@ -226,8 +226,16 @@ class MainController extends Controller
             $meter = \App\Meter::where('id',$key)->where('apartment_id', $apartment->id)->first();
             if (!$meter)
                 array_push($errors, 'ER03:'.$key.' - системная ошибка, обратитесь Вашу Управляющую организацию и сообщите код ошибки.');
-            if (empty($value))
+            if (empty($value)){
+                $new_value = \App\MeterValue::where('file_id',$file_id)->where('meter_id', $key)->first();
+                if ($new_value){
+                    $new_value->date = \Carbon\Carbon::now();
+                    $new_value->value = $value;
+                    array_push($saving, $new_value);
+                }
                 continue;
+            }
+                
 
             $val = floatval($value);
             if ($val<0){
@@ -292,10 +300,11 @@ class MainController extends Controller
 
             if (count($saving)>0){
                 foreach ($saving as $nv){
-                    $nv->save();
+                    if ($nv->value == 0) $nv->delete();
+                    else $nv->save();
                 }
             }else{
-                return json_encode(['success'=>false,'errors'=>['Вы не указали новые показания.'], 'efields'=>$errorsFields]);    
+                return json_encode(['success'=>true,'empty'=>true]);
             }
             return json_encode(['success'=>true, 'message'=>'Показания успешно сохранены.']);    
         }

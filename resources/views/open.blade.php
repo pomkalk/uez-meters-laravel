@@ -88,10 +88,19 @@
 			$.post("{{ url('save') }}", form_data, function(data){
 				console.log(data.success);
 				if (data.success){
-					$('#errors-list').transition('hide');
-					btn.hide();
-					$('#success-message').html(data.message);
-					$('#success-message').transition('fade in');
+					if (data.empty){
+						$('.ui.input.values').removeClass('error');
+						$('#errors-list').transition('hide');
+						btn.removeClass('disabled loading');
+						$('.ui.input.values').removeClass('disabled');	
+					}else{
+						$('.ui.input.values').removeClass('error');
+						$('#errors-list').transition('hide');
+						btn.hide();
+						$('#success-message').html(data.message);
+						$('#success-message').transition('fade in');												
+					}
+
 				}else{
 					console.log('wtf');
 					var errors = "";

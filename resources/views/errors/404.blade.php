@@ -7,7 +7,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>oops 404 for Website Template for free | Home :: w3layouts</title>
+<title>Ой</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <link href='https://fonts.googleapis.com/css?family=Bad+Script' rel='stylesheet' type='text/css'>
 <style type="text/css">

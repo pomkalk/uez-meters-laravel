@@ -147,8 +147,14 @@ class AdminController extends Controller
 
     public function getDatabase(){
         $uploads = \App\MeterFile::latest()->get();
-        return view('admin.database', ['files'=>$uploads]);
+        $trashed = \App\MeterFile::onlyTrashed()->get();
+        $file = \App\MeterFile::where('active',1)->first();
+        return view('admin.database', ['files'=>$uploads, 'trashed'=>$trashed, 'isTrash'=>false, 'active_file'=>$file]);
     }
+    public function getDatabaseTrashed(){
+        $uploads = \App\MeterFile::onlyTrashed()->get();
+        return view('admin.database', ['files'=>$uploads, 'trashed'=>[], 'isTrash'=>true]);
+    }    
 
     public function getDatabaseAdd(){
         return view('admin.addfile');
@@ -182,6 +188,14 @@ class AdminController extends Controller
 
         return redirect('admin/database');
     }
+
+    public function getRestore($id){
+        $file = \App\MeterFile::onlyTrashed()->where('id',$id)->first();
+        $file->active = 0;
+        $file->restore();
+
+        return redirect('admin/database');
+    }    
 
     public function getActivate($id){
         $file = \App\MeterFile::findOrFail($id);

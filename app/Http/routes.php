@@ -65,10 +65,14 @@ Route::group(['middleware' => ['admin']], function () {
 
 
     Route::get('admin/database', 'AdminController@getDatabase');
+    Route::get('admin/database/trashed', 'AdminController@getDatabaseTrashed');
     Route::get('admin/database/add', 'AdminController@getDatabaseAdd');
     Route::post('admin/database/add', 'AdminController@postDatabaseAdd');
     Route::get('admin/database/delete/{id}', 'AdminController@getDelete');
     Route::get('admin/database/activate/{id}', 'AdminController@getActivate');
+
+    Route::get('admin/database/restore/{id}', 'AdminController@getRestore');
+
     Route::get('admin/database/download', 'AdminController@getDownloadCsv');
 
 });

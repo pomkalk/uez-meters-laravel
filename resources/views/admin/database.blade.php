@@ -10,6 +10,8 @@
 	<div class="panel-body">
 		<a href="{{url('admin/database/add')}}" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span>Добавить счетчики</button>
 		</a>
+		<a href="{{url('admin/database/download')}}" class="btn btn-primary"><span class="glyphicon glyphicon-download"></span>Скачать данные в CSV</button>
+		</a>
 
 		@if(count($errors)>0)
 			<div class="alert alert-danger">

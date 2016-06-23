@@ -287,4 +287,47 @@ class AdminController extends Controller
         return redirect('admin/database');
     }
 
+    public function getDownloadCsv()
+    {
+        $file = \App\MeterFile::where('active',1)->first();
+        if (!$file)
+            return back()->withErrors('Необходимо активировать базу.');
+
+        $values = \App\MeterValue::where('file_id',$file->id)->get();
+
+        if (count($values)==0)
+            return back()->withErrors('Список показаний пуст.');
+        $mv = [];        
+        foreach($values as $val)
+            $mv[$val->meter_id] = ['value'=>$val->value,'date'=>$val->date];
+
+        $meters = \App\Meter::where('status_id',1)->whereIn('id', array_keys($mv))->with('apartment.building.street', 'service')->get();
+
+        $response = "prefix;street;number;housing;unit;part;service_name;ls;meter_id;date;value\r\n";
+
+        foreach($meters as $item){
+            $line = $item->apartment->building->street->prefix.';';
+            $line.= $item->apartment->building->street->name.';';
+            $line.= $item->apartment->building->number.';';
+            $line.= $item->apartment->building->housing.';';
+            $line.= $item->apartment->number.';';
+            $line.= $item->apartment->part.';';
+            $line.= $item->service->name.';';
+            $line.= $item->apartment->ls.';';
+            $line.= $item->meter_id.';';
+            $line.= with(new \Carbon\Carbon($mv[$item->id]['date']))->format('d.m.Y').';';
+            $line.= $mv[$item->id]['value']."\r\n";
+
+            $response.=$line;
+        }
+
+        $response = iconv('utf-8','cp1251', $response);
+
+        return response($response)->withHeaders([
+                'Content-type'=>'text/html; charset=utf-8',
+                'Content-Disposition'=>'attachment; filename='.$file->name.'.csv',
+                'Expires'=>'0'
+            ]);
+    }
+
 }

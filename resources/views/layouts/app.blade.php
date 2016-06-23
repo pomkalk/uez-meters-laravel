@@ -24,12 +24,12 @@
 		}
 
 		#main-grid {
-			padding-bottom: 40px;
+			margin-bottom: 40px;
 		}
 
 		@media (max-width: 768px){
 			#main-grid {
-				padding-bottom: 80px;
+				margin-bottom: 80px;
 			}			
 		}
 	</style>

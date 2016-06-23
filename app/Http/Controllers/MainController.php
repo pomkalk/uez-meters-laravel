@@ -113,9 +113,9 @@ class MainController extends Controller
             ]);
         $response = $curl->response;
         if (!isset($response->success))
-            return redirect('/')->withErrors('Ошибка recaptcha, обратитесь в Вашу Управляющую организацию.');
+            return redirect('/')->withErrors('Ошибка recaptcha, попробуйте еще раз.');
         if (!$response->success)
-            return redirect('/')->withErrors('Ошибка recaptcha, обратитесь в Вашу Управляющую организацию.');  
+            return redirect('/')->withErrors('Ошибка recaptcha, попробуйте еще раз.');
 
         $apartment = \App\Apartment::find($request->input('apartment'));
         if ($apartment->ls != $request->input('ls'))

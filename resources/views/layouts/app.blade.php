@@ -23,13 +23,13 @@
 			}
 		}
 
-		.ui.stackable.grid{
-			margin-bottom: 40px;
+		#main-grid {
+			padding-bottom: 40px;
 		}
 
 		@media (max-width: 768px){
-			.ui.stackable.grid{
-				margin-bottom: 80px;
+			#main-grid {
+				padding-bottom: 80px;
 			}			
 		}
 	</style>
@@ -53,7 +53,7 @@
 	</div>
 </div>
 
-<div class="ui stackable centered grid">
+<div id="main-grid" class="ui stackable centered grid">
 	
 		@yield('content')
 	

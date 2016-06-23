@@ -21,9 +21,8 @@ class MainController extends Controller
             if (count($tmp)!=3)
                 return redirect('/')->withCookie(\Cookie::forget('kvowner'));
             $ls = intval($tmp[0]);
-            $space = intval($tmp[1]);
+            $space = floatval($tmp[1]);
             $file_id = intval($tmp[2]); 
-
 
             $apartment = \App\Apartment::where('ls', $ls)->where('space', $space)->first();
             if (!$apartment){

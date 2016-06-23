@@ -16,7 +16,7 @@
 		</a>
 		@endif
 		@endif
-		@if( count($trashed)>0 )
+		@if( $trashed>0 )
 		<a href="{{url('admin/database/trashed')}}" class="btn btn-warning"><span class="glyphicon glyphicon-trash"></span>Удаленные</button>
 		</a>
 		@endif		
@@ -41,7 +41,7 @@
 				<tbody>
 					@foreach($files as $file)
 					<tr class="{{ ($file->active)?'success':''}}">
-						<td>{{ $file->name }}&nbsp<span class="badge">{{ $file->SavedValues}}</span></td>
+						<td>{{ $file->name }}</td>
 						<td>{{ $file->created_at }}</td>
 						<td>
 							@if ((!$file->active) && (!$isTrash))
@@ -57,6 +57,7 @@
 					@endforeach
 				</tbody>
 			</table>
+			{{ $files->links() }}
 		@else
 		<p>Файлы не загружены</p>
 		@endif

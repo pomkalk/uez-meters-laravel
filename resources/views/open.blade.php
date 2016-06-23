@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+<link rel="stylesheet" href="{{ asset('trumbowyg/trumbowyg.min.css') }}">
+<script type="text/javascript" src="{{ asset('trumbowyg/trumbowyg.min.js') }}"></script>
 
 <div class="ten wide large screen twelve wide computer fiveteen wide tablet fiveteen wide mobile column">
 
@@ -67,6 +69,41 @@
 		{{ AppConfig::get('work.infometter') }}
 	</div>
 	@endif
+
+	@if ($feedback)
+
+	@else
+	<div class="ui basic center aligned segment">
+		<div id="feedback-button" class="ui basic button">
+			<i class="teal comments outline icon"></i>
+			Оставить отзыв
+		</div>
+	</div>
+	@endif
+</div>
+
+<div id="feedback-form" class="ui modal">
+	<i class="close icon"></i>
+	<div class="header">Форма для отзыва</div>
+	<div class="content">
+		<form id="form-feedback" class="ui form">
+			{{ csrf_field() }}
+			<input type="hidden" name="owner" value="{{ $apartment->ls }}">
+			<div class="field">
+				<label>Адрес отправителя</label>
+				<input type="text" readonly value="{{ $address }} (ЛС {{ $apartment->ls }})">
+			</div>
+			<div class="field">
+				<label>Текст отзыва</label>
+				<textarea name="feedtext" id="feedtext" rows="4"></textarea>
+			</div>
+		</form>
+		<div class="ui error message transition hidden"></div>
+	</div>
+	<div class="actions">
+		<div id="save-feedback" class="ui basic green button">Оставить отзыв</div>
+		<div class="ui basic cancel red button">Закрыть</div>
+	</div>
 </div>
 
 <script type="text/javascript">
@@ -78,48 +115,83 @@
     		interval  : 200
   		});
 	@endif
+
 		$('#meters').submit(false);
+		$('#form-feedback').submit(false);
+		$('#feedtext').trumbowyg({
+			lang: 'ru',
+			btns:['bold','italic','underline'],
+			autogrow: true,
+			semantic: true,
+		});
 		$('#save').click(function(){
 			var btn = $(this);
-			var form_data = $('#meters').serialize();
-			btn.addClass('disabled loading');
-			$('.ui.input.values').addClass('disabled');
+			if (!btn.hasClass('loading')){
+				var form_data = $('#meters').serialize();
+				btn.addClass('disabled loading');
+				$('.ui.input.values').addClass('disabled');
 
-			$.post("{{ url('save') }}", form_data, function(data){
-				console.log(data.success);
-				if (data.success){
-					if (data.empty){
-						$('.ui.input.values').removeClass('error');
-						$('#errors-list').transition('hide');
-						btn.removeClass('disabled loading');
-						$('.ui.input.values').removeClass('disabled');	
+				$.post("{{ url('save') }}", form_data, function(data){
+					if (data.success){
+						if (data.empty){
+							$('.ui.input.values').removeClass('error');
+							$('#errors-list').transition('hide');
+							btn.removeClass('disabled loading');
+							$('.ui.input.values').removeClass('disabled');	
+						}else{
+							$('.ui.input.values').removeClass('error');
+							$('#errors-list').transition('hide');
+							//btn.hide();
+							$('#success-message').html(data.message);
+							$('#success-message').transition('fade in');												
+						}
+
 					}else{
+						var errors = "";
+						for (i in data.errors){
+							error = data.errors[i];
+							errors+="<li>"+error+"</li>";
+						}
 						$('.ui.input.values').removeClass('error');
-						$('#errors-list').transition('hide');
-						btn.hide();
-						$('#success-message').html(data.message);
-						$('#success-message').transition('fade in');												
-					}
+						for (i in data.efields){
+							$('input[name="meter['+data.efields[i]+']"]').closest('.ui.input.values').addClass('error');
+						}
 
-				}else{
-					console.log('wtf');
-					var errors = "";
-					for (i in data.errors){
-						error = data.errors[i];
-						errors+="<li>"+error+"</li>";
+						$('#errors-list').html("<ul>"+errors+"</ul>");
+						$('#errors-list').transition('fade in');
+						btn.removeClass('disabled loading');
+						$('.ui.input.values').removeClass('disabled');				
 					}
-					$('.ui.input.values').removeClass('error');
-					for (i in data.efields){
-						$('input[name="meter['+data.efields[i]+']"]').closest('.ui.input.values').addClass('error');
+				}, 'json');
+			}
+		});
+
+		$('#feedback-button').click(function(){
+			$('#feedtext').trumbowyg('empty');
+			$('#feedback-form').modal('setting','transition','fade up').modal('show');
+		});
+
+		$('#save-feedback').click(function(){
+			var btn = $(this);
+			if (!btn.hasClass('loading')){
+				$('#feedback-form .ui.error.message').transition('hide');
+				btn.addClass('loading');
+				$.post('{{ url("savefeedback") }}', $('#form-feedback').serialize(), function(data){
+					if (data.success){
+						$('#feedback-form').modal('setting','transition','fade up').modal('hide');
+
+					}else{
+						var errors = "";
+						for (i in data.errors){
+							error = data.errors[i];
+							errors+="<li>"+error+"</li>";
+						}
+						$('#feedback-form .ui.error.message').html("<ul>"+errors+"</ul>");
+						$('#feedback-form .ui.error.message').transition('fade in');
 					}
-
-					$('#errors-list').html("<ul>"+errors+"</ul>");
-					$('#errors-list').transition('fade in');
-					btn.removeClass('disabled loading');
-					$('.ui.input.values').removeClass('disabled');				
-				}
-			}, 'json');
-
+					btn.removeClass('loading');
+				}, 'json');
+			}
 		});
 	})
 

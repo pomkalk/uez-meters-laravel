@@ -14,13 +14,10 @@ class CreateFeedbacksTable extends Migration
     {
         Schema::create('feedbacks', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('public_id',60);
-            $table->integer('apartment_id')->unsigned();
-            $table->string('email')->nullable();
-            $table->text('feedback');
-            $table->date('shown_at')->nullable();
-            $table->integer('shown_times')->unsigned()->default(0);
-            $table->boolean('unread')->default(true);
+            $table->integer('ls');
+            $table->text('text');
+            $table->timestamp('read_at')->nullable();
+            $table->boolean('answered')->default(false);
             $table->timestamps();
         });
     }

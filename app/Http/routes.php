@@ -41,6 +41,7 @@ Route::group(['middleware' => ['web']], function () {
 	Route::get('building{id}', 'MainController@getApartment');
 
 	Route::post('save', 'MainController@save');
+	Route::post('savefeedback', 'MainController@saveFeedback');
 
 	Route::get('not-available', function(){
 		return view('not-available');

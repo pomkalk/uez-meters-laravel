@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use Validator;
 
 class MainController extends Controller
 {
@@ -89,7 +89,7 @@ class MainController extends Controller
                 'apartment'=>'required|exists:apartments,id',
                 'ls'=>'required|integer',
                 'space'=>'required|numeric',
-                'g-recaptcha-response'=>'required',
+                //'g-recaptcha-response'=>'required',
             ],[
                 'street.required'=>'Укажите улицу.',
                 'street.exists'=>'Вы указали неверную улицу.',
@@ -101,19 +101,19 @@ class MainController extends Controller
                 'ls.integer'=>'Лицевой счет это целое число.',
                 'space.required'=>'Укажите площадь помещения.',
                 'space.numeric'=>'Площадь помещение должно быть числом.',
-                'g-recaptcha-response.required'=>'Нажмите на флажок подтверждения, что Вы не робот.',
+                //'g-recaptcha-response.required'=>'Нажмите на флажок подтверждения, что Вы не робот.',
             ]);
 
-        $curl = new \Curl\Curl();
-        $curl->post('https://www.google.com/recaptcha/api/siteverify', [
-                'secret'=>env('RECAPTHCA_SECRET'),
-                'response'=>$request->input('g-recaptcha-response'),
-            ]);
-        $response = $curl->response;
-        if (!isset($response->success))
-            return redirect('/')->withErrors('Ошибка recaptcha, попробуйте еще раз.');
-        if (!$response->success)
-            return redirect('/')->withErrors('Ошибка recaptcha, попробуйте еще раз.');
+        //$curl = new \Curl\Curl();
+        //$curl->post('https://www.google.com/recaptcha/api/siteverify', [
+        //        'secret'=>env('RECAPTHCA_SECRET'),
+        //        'response'=>$request->input('g-recaptcha-response'),
+        //    ]);
+        //$response = $curl->response;
+        //if (!isset($response->success))
+        //    return redirect('/')->withErrors('Ошибка recaptcha, попробуйте еще раз.');
+        //if (!$response->success)
+        //    return redirect('/')->withErrors('Ошибка recaptcha, попробуйте еще раз.');
 
         $apartment = \App\Apartment::find($request->input('apartment'));
         if ($apartment->ls != $request->input('ls'))
@@ -177,6 +177,7 @@ class MainController extends Controller
                 'meters'=>$meters,
                 'show_info'=>$show_info,
                 'meter_values'=>$meter_values,
+                'feedback'=>null,
             ]);
     }
 
@@ -305,5 +306,44 @@ class MainController extends Controller
             return json_encode(['success'=>true, 'message'=>'Показания успешно сохранены.']);    
         }
 
+    }
+
+    public function saveFeedback(Request $request)
+    {
+        if (!session()->has('can-save'))
+            return json_encode(['success'=>false,'errors'=>['Ошибка прав доступа на сохранение отзыва.']]);
+        session()->flash('can-save','1');
+
+
+        $validator = Validator::make($request->all(), [
+                'owner'=>'required|exists:apartments,ls',
+                'feedtext'=>'required',
+            ],[
+                'feedtext.required'=>'Заполните текст отзыва.'
+            ]);
+
+        if ($validator->fails())
+            return json_encode(['success'=>false,'errors'=>$validator->errors()->all()]);
+
+        $ls = $request->input('owner');
+        $text = $request->input('feedtext');
+
+        $text = str_replace('<p>', '[p]', $text);
+        $text = str_replace('</p>', '[/p]', $text);
+        $text = str_replace('<strong>', '[strong]', $text);
+        $text = str_replace('</strong>', '[/strong]', $text);
+        $text = str_replace('<em>', '[em]', $text);
+        $text = str_replace('</em>', '[/em]', $text);
+        $text = str_replace('<u>', '[u]', $text);
+        $text = str_replace('</u>', '[/u]', $text);
+
+        $text = htmlspecialchars($text);
+
+        $feed = new \App\Feedback();
+        $feed->ls = $ls;
+        $feed->text = $text;
+        $feed->save();
+
+        return json_encode(['success'=>true]);
     }
 }

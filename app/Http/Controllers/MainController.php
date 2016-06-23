@@ -42,7 +42,6 @@ class MainController extends Controller
                 }
             }
 
-
             return view('main', ['saved'=>true, 'apartment'=>$apartment]);
         }
 
@@ -72,8 +71,8 @@ class MainController extends Controller
         $data = [];
         foreach($building as $item){
             $n = strval($item->number);
-            if ($item->housing)
-                $n.='('.$item->housing.')';
+            if ($item->part)
+                $n.='('.$item->part.')';
             array_push($data,['id'=>$item->id, 'title'=>$n]);
         }
         return json_encode($data);
@@ -83,7 +82,6 @@ class MainController extends Controller
         $file = \App\MeterFile::where('active',1)->first();
         if (!$file)
             return redirect('/')->withErrors('Данные на загружены, обратитесь Вашу Управляющую организацию.');
-
 
         $this->validate($request, [
                 'street'=>'required|exists:streets,id',
@@ -138,8 +136,6 @@ class MainController extends Controller
                     'apartment_id'=>$apartment->id,
                 ]);            
         }
-
-
     }
 
     public function open(){
@@ -309,7 +305,5 @@ class MainController extends Controller
             return json_encode(['success'=>true, 'message'=>'Показания успешно сохранены.']);    
         }
 
-        
-            
     }
 }

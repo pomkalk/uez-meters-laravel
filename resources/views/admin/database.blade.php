@@ -9,15 +9,15 @@
 	<div class="panel-heading"><strong>База данных счетчиков</strong>{!! $isTrash?' - Удаленные - <a href="'.url('admin/database').'">Назад</a>':'' !!}</div>
 	<div class="panel-body">
 		@if (!$isTrash)
-		<a href="{{url('admin/database/add')}}" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span>Добавить счетчики</button>
+		<a href="{{url('admin/database/add')}}" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span>&nbsp;Добавить счетчики</button>
 		</a>
 		@if ($active_file)
-		<a href="{{url('admin/database/download')}}" class="btn btn-primary"><span class="glyphicon glyphicon-download"></span>Скачать данные в CSV</button>
+		<a href="{{url('admin/database/download')}}" class="btn btn-primary"><span class="glyphicon glyphicon-download"></span>&nbsp;Скачать данные в CSV</button>
 		</a>
 		@endif
 		@endif
 		@if( $trashed>0 )
-		<a href="{{url('admin/database/trashed')}}" class="btn btn-warning"><span class="glyphicon glyphicon-trash"></span>Удаленные</button>
+		<a href="{{url('admin/database/trashed')}}" class="btn btn-warning"><span class="glyphicon glyphicon-trash"></span>&nbsp;Удаленные</button>
 		</a>
 		@endif		
 

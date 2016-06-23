@@ -152,8 +152,8 @@ class AdminController extends Controller
         return view('admin.database', ['files'=>$uploads, 'trashed'=>$trashed, 'isTrash'=>false, 'active_file'=>$file]);
     }
     public function getDatabaseTrashed(){
-        $uploads = \App\MeterFile::onlyTrashed()->get();
-        return view('admin.database', ['files'=>$uploads, 'trashed'=>[], 'isTrash'=>true]);
+        $uploads = \App\MeterFile::onlyTrashed()->paginate(15);
+        return view('admin.database', ['files'=>$uploads, 'trashed'=>0, 'isTrash'=>true]);
     }    
 
     public function getDatabaseAdd(){

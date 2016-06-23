@@ -39,6 +39,7 @@ Route::group(['middleware' => ['web']], function () {
 	Route::get('test', 'MainController@test');
 	Route::get('street{id}', 'MainController@getBuilding');
 	Route::get('building{id}', 'MainController@getApartment');
+	Route::get('feedbacks', 'MainController@getFeedbacks');
 
 	Route::post('save', 'MainController@save');
 	Route::post('savefeedback', 'MainController@saveFeedback');

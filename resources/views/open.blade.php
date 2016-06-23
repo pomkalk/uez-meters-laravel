@@ -70,16 +70,16 @@
 	</div>
 	@endif
 
-	@if ($feedback)
-
-	@else
 	<div class="ui basic center aligned segment">
 		<div id="feedback-button" class="ui basic button">
 			<i class="teal comments outline icon"></i>
 			Оставить отзыв
 		</div>
+		<div id="feedback-list" class="ui basic button{{ ($feedbacks==0)?' transition hidden':''}}">
+			<i class="teal browser icon"></i>
+			Посмотреть оставленные отзывы
+		</div>
 	</div>
-	@endif
 </div>
 
 <div id="feedback-form" class="ui modal">
@@ -102,6 +102,17 @@
 	</div>
 	<div class="actions">
 		<div id="save-feedback" class="ui basic green button">Оставить отзыв</div>
+		<div class="ui basic cancel red button">Закрыть</div>
+	</div>
+</div>
+
+<div id="feedback-table" class="ui modal">
+	<i class="close icon"></i>
+	<div class="header">Ваши отзывы</div>
+	<div class="content">
+
+	</div>
+	<div class="actions">
 		<div class="ui basic cancel red button">Закрыть</div>
 	</div>
 </div>
@@ -137,7 +148,7 @@
 							$('.ui.input.values').removeClass('error');
 							$('#errors-list').transition('hide');
 							btn.removeClass('disabled loading');
-							$('.ui.input.values').removeClass('disabled');	
+							$('.ui.input.values').removeClass('disabled');
 						}else{
 							$('.ui.input.values').removeClass('error');
 							$('#errors-list').transition('hide');
@@ -178,8 +189,9 @@
 				btn.addClass('loading');
 				$.post('{{ url("savefeedback") }}', $('#form-feedback').serialize(), function(data){
 					if (data.success){
+						$('#feedback-form .ui.error.message').html("<ul>"+errors+"</ul>");
+						$('#feedback-list').transition('show');
 						$('#feedback-form').modal('setting','transition','fade up').modal('hide');
-
 					}else{
 						var errors = "";
 						for (i in data.errors){
@@ -188,6 +200,43 @@
 						}
 						$('#feedback-form .ui.error.message').html("<ul>"+errors+"</ul>");
 						$('#feedback-form .ui.error.message').transition('fade in');
+					}
+					btn.removeClass('loading');
+				}, 'json');
+			}
+		});
+
+		$('#feedback-list').click(function(){ 
+			var btn = $(this);
+			if (!btn.hasClass('loading')){
+				btn.addClass('loading');
+				$.get('{{ url("feedbacks") }}?ls={{ $apartment->ls }}',function(data){
+					if (data.success){
+						var feeds = "";
+						for (i in data.data){
+							item = data.data[i];
+							feeds+='<h4 class="ui header">Отзыв от '+item.date+'</h4>'+item.text+'<div class="ui divider"></div>';
+						}
+						$('#feedback-table').find('.content').html(feeds);
+						if (data.lastPage>0){
+							$('#feedback-table').find('.content').append('<div class="ui pagination menu">');
+							for (i=1;i<=data.lastPage;i++){
+								if (i == data.currentPage){
+									$('#feedback-table').find('.content .ui.pagination').append('<div class="active link item">'+i+'</div>');
+								}else{
+									$('#feedback-table').find('.content .ui.pagination').append('<div class="link item">'+i+'</div>');
+								}
+							}
+						}
+						$('#feedback-table').modal('setting','transition','fade up').modal('show');
+					}else{
+						var errors = "";
+						for (i in data.errors){
+							error = data.errors[i];
+							errors+="<li>"+error+"</li>";
+						}
+						$('#errors-list').html("<ul>"+errors+"</ul>");
+						$('#errors-list').transition('fade in');
 					}
 					btn.removeClass('loading');
 				}, 'json');

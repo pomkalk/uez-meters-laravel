@@ -170,6 +170,8 @@ class MainController extends Controller
                 $show_info = true;
         }
 
+        $feedbacks = \App\Feedback::where('ls', $apartment->ls)->count();
+
         return view('open', [
                 'address' => $full_address,
                 'apartment'=>$apartment,
@@ -177,7 +179,7 @@ class MainController extends Controller
                 'meters'=>$meters,
                 'show_info'=>$show_info,
                 'meter_values'=>$meter_values,
-                'feedback'=>null,
+                'feedbacks'=>$feedbacks,
             ]);
     }
 
@@ -308,12 +310,35 @@ class MainController extends Controller
 
     }
 
+    public function getFeedbacks(Request $request)
+    {
+        if (!session()->has('can-save'))
+            return json_encode(['success'=>false,'errors'=>['Ошибка прав доступа на получения списка отзывов.']]);
+        session()->flash('can-save','1');
+        $feedbacks = \App\Feedback::where('ls', $request->input('ls'))->latest()->paginate(3);
+        $data = [];
+
+        foreach($feedbacks as $feedback){
+            $text = $feedback->text;
+            $text = str_replace('[p]', '<p>', $text);
+            $text = str_replace('[/p]', '</p>', $text);
+            $text = str_replace('[strong]', '<strong>', $text);
+            $text = str_replace('[/strong]', '</strong>', $text);
+            $text = str_replace('[em]', '<em>', $text);
+            $text = str_replace('[/em]', '</em>', $text);
+            $text = str_replace('[u]', '<u>', $text);
+            $text = str_replace('[/u]', '</u>', $text);
+
+            array_push($data, ['date'=>$feedback->created_at->format('d.m.Y'),'text'=>$text]);
+        }
+        return json_encode(['success'=>true, 'data'=>$data, 'lastPage'=>$feedbacks->lastPage(), 'currentPage'=>$feedbacks->currentPage()]);
+    }
+
     public function saveFeedback(Request $request)
     {
         if (!session()->has('can-save'))
             return json_encode(['success'=>false,'errors'=>['Ошибка прав доступа на сохранение отзыва.']]);
         session()->flash('can-save','1');
-
 
         $validator = Validator::make($request->all(), [
                 'owner'=>'required|exists:apartments,ls',

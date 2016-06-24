@@ -75,7 +75,7 @@
 			<i class="teal comments outline icon"></i>
 			Оставить отзыв
 		</div>
-		<div id="feedback-list" class="ui basic button{{ ($feedbacks==0)?' transition hidden':''}}">
+		<div id="feedback-list" class="ui basic button{{ ($feedbacks_count==0)?' transition hidden':''}}">
 			<i class="teal browser icon"></i>
 			Посмотреть оставленные отзывы
 		</div>
@@ -117,6 +117,44 @@
 	</div>
 </div>
 
+@if (count($feedbacks)>0)
+<div id="feedback-notify" class="ui modal">
+	<i class="close icon"></i>
+	<div class="header">Вы получили ответ на отзывы</div>
+	<div class="modal content">
+		<div class="ui feed">
+			@foreach ($feedbacks as $feedback)
+			<div class="event">
+				<div class="label">
+					<i class="pencil icon"></i>
+				</div>
+				<div class="content">
+					<div class="date">{{ $feedback->created_at }}</div>
+					<div class="summary">
+						{!! $feedback->text !!}
+						<div class="ui feed">
+							<div class="event">
+								<div class="label">
+									<i class="green share icon"></i>
+								</div>
+								<div class="content">
+									{!! $feedback->answer->text !!}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			@endforeach
+		</div>
+
+	</div>
+	<div class="actions">
+		<div class="ui basic cancel red button">Закрыть</div>
+	</div>
+</div>
+@endif
+
 <script type="text/javascript">
 	$(function(){
 	@if ($show_info)
@@ -125,6 +163,9 @@
     		duration  : 800,
     		interval  : 200
   		});
+	@endif
+		@if (count($feedbacks)>0)
+		$('#feedback-notify').modal('setting','transition','fade up').modal('show');
 	@endif
 
 		$('#meters').submit(false);

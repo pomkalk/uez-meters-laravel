@@ -170,7 +170,13 @@ class MainController extends Controller
                 $show_info = true;
         }
 
-        $feedbacks = \App\Feedback::where('ls', $apartment->ls)->count();
+        $feedbacks_count = \App\Feedback::where('ls', $apartment->ls)->count();
+        $feedbacks = \App\Feedback::whereHas('answer', function($query) { $query->whereNull('read_at'); })->get();
+        foreach($feedbacks as $feedback){
+            $feedback->answer->read_at = \Carbon\Carbon::now();
+            $feedback->answer->save();
+        }
+
 
         return view('open', [
                 'address' => $full_address,
@@ -179,6 +185,7 @@ class MainController extends Controller
                 'meters'=>$meters,
                 'show_info'=>$show_info,
                 'meter_values'=>$meter_values,
+                'feedbacks_count'=>$feedbacks_count,
                 'feedbacks'=>$feedbacks,
             ]);
     }
@@ -315,7 +322,7 @@ class MainController extends Controller
         if (!session()->has('can-save'))
             return json_encode(['success'=>false,'errors'=>['Ошибка прав доступа на получения списка отзывов.']]);
         session()->flash('can-save','1');
-        
+
         $feedbacks = \App\Feedback::where('ls', $request->input('ls'))->latest()->with('answer')->paginate(3);
         $data = [];
 

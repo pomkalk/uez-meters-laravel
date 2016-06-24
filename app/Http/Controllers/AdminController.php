@@ -288,7 +288,7 @@ class AdminController extends Controller
             DB::table('buildings')->delete();
             DB::table('apartments')->delete();
             DB::table('meters')->delete();
-            DB::table('services')->delete();dd($e);
+            DB::table('services')->delete();
             return redirect('admin/database')->withErrors($e->getMessage());
         }
 

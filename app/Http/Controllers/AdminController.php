@@ -361,4 +361,28 @@ class AdminController extends Controller
         return view('admin.feedbacks.read', ['feedback'=>$feedback]);
     }
 
+    public function postFeedbacksSave(Request $request)
+    {
+        $this->validate($request, [
+                'fid'=>'required|exists:feedbacks,id',
+                'editor'=>'required',
+            ],[
+                'editor.required'=>'Укажите ответ на отзыв'   
+            ]);
+
+        $feedback = \App\Feedback::findOrFail($request->input('fid'));
+        $answer = $feedback->answer;
+
+        if (!$answer){
+            $answer = new \App\Answer();
+            $answer->feedback_id = $feedback->id;
+        }
+
+        $answer->read_at = null;
+        $answer->text = $request->input('editor');
+
+        $answer->save();
+        return redirect('admin/feedbacks');
+    }
+
 }

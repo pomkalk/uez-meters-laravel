@@ -9,6 +9,7 @@
 	<link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
 	<link rel="stylesheet" href="{{ asset('css/bootstrap-editable.css') }}">
 	<link rel="stylesheet" href="{{ asset('css/admin/styles.css') }}">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 </head>
 <body>
 	<nav class="navbar navbar-default">
@@ -53,7 +54,7 @@
 	</div>
 
 	@include('admin.layouts.footer')
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	
 	<script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script>
 	<!-- <script type="text/javascript" src="{{ asset('js/flat-ui.min.js') }}"></script> -->
 	<script type="text/javascript" src="{{ asset('js/moment.js') }}"></script>	

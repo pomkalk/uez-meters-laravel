@@ -95,7 +95,7 @@
 			</div>
 			<div class="field">
 				<label>Текст отзыва</label>
-				<textarea name="feedtext" id="feedtext" rows="4"></textarea>
+				<div id="feedtext" rows="4"></div>
 			</div>
 		</form>
 		<div class="ui error message transition hidden"></div>

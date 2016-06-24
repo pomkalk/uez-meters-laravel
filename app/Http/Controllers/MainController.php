@@ -315,21 +315,23 @@ class MainController extends Controller
         if (!session()->has('can-save'))
             return json_encode(['success'=>false,'errors'=>['Ошибка прав доступа на получения списка отзывов.']]);
         session()->flash('can-save','1');
-        $feedbacks = \App\Feedback::where('ls', $request->input('ls'))->latest()->paginate(3);
+        $feedbacks = \App\Feedback::where('ls', $request->input('ls'))->latest()->with('answer')->paginate(3);
         $data = [];
 
         foreach($feedbacks as $feedback){
             $text = $feedback->text;
-            $text = str_replace('[p]', '<p>', $text);
-            $text = str_replace('[/p]', '</p>', $text);
-            $text = str_replace('[strong]', '<strong>', $text);
-            $text = str_replace('[/strong]', '</strong>', $text);
-            $text = str_replace('[em]', '<em>', $text);
-            $text = str_replace('[/em]', '</em>', $text);
-            $text = str_replace('[u]', '<u>', $text);
-            $text = str_replace('[/u]', '</u>', $text);
-
-            array_push($data, ['date'=>$feedback->created_at->format('d.m.Y'),'text'=>$text]);
+            $text = preg_replace('/\[p(.*?)\]/', '<p$1>', $text);
+            $text = preg_replace('/\[\/p(.*?)\]/', '</p$1>', $text);
+            $text = preg_replace('/\[strong(.*?)\]/', '<strong$1>', $text);
+            $text = preg_replace('/\[\/strong(.*?)\]/', '</strong$1>', $text);
+            $text = preg_replace('/\[em(.*?)\]/', '<em$1>', $text);
+            $text = preg_replace('/\[\/em(.*?)\]/', '</em$1>', $text);
+            $text = preg_replace('/\[u(.*?)\]/', '<u$1>', $text);
+            $text = preg_replace('/\[\/u(.*?)\]/', '</u$1>', $text);
+            $item = ['date'=>$feedback->created_at->format('d.m.Y'),'text'=>$text];
+            if ($feedback->answer)
+                $item['answer']=$feedback->answer->text;
+            array_push($data, $item);
         }
         return json_encode(['success'=>true, 'data'=>$data, 'lastPage'=>$feedbacks->lastPage(), 'currentPage'=>$feedbacks->currentPage()]);
     }
@@ -353,15 +355,14 @@ class MainController extends Controller
         $ls = $request->input('owner');
         $text = $request->input('feedtext');
 
-        $text = str_replace('<p>', '[p]', $text);
-        $text = str_replace('</p>', '[/p]', $text);
-        $text = str_replace('<strong>', '[strong]', $text);
-        $text = str_replace('</strong>', '[/strong]', $text);
-        $text = str_replace('<em>', '[em]', $text);
-        $text = str_replace('</em>', '[/em]', $text);
-        $text = str_replace('<u>', '[u]', $text);
-        $text = str_replace('</u>', '[/u]', $text);
-
+        $text = preg_replace('/<p(.*?)>/', '[p$1]', $text);
+        $text = preg_replace('/<\/p(.*?)>/', '[/p$1]', $text);
+        $text = preg_replace('/<strong(.*?)>/', '[strong$1]', $text);
+        $text = preg_replace('/<\/strong(.*?)>/', '[/strong$1]', $text);
+        $text = preg_replace('/<em(.*?)>/', '[em$1]', $text);
+        $text = preg_replace('/<\/em(.*?)>/', '[/em$1]', $text);
+        $text = preg_replace('/<u(.*?)>/', '[u$1]', $text);
+        $text = preg_replace('/<\/u(.*?)>/', '[/u$1]', $text);
         $text = htmlspecialchars($text);
 
         $feed = new \App\Feedback();

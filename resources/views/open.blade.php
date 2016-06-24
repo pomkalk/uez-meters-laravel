@@ -109,7 +109,7 @@
 <div id="feedback-table" class="ui modal">
 	<i class="close icon"></i>
 	<div class="header">Ваши отзывы</div>
-	<div class="content">
+	<div class="modal content">
 
 	</div>
 	<div class="actions">
@@ -206,27 +206,66 @@
 			}
 		});
 
+		var load_feed = function(){
+			$.get('{{ url("feedbacks") }}?ls={{ $apartment->ls }}&page='+$(this).data('page'),function(data){
+				if (data.success){
+						var feeds = '<div class="ui feed">';
+						for (i in data.data){
+							item = data.data[i];
+							feeds+='<div class="event"><div class="label"><i class="pencil icon"></i></div><div class="content"><div class="date">';
+							feeds+=item.date;
+							feeds+='</div><div class="summary">';
+							feeds+=item.text;
+							if (item.answer)
+								feeds+='<div class="ui feed"><div class="event"><div class="label"><i class="green share icon"></i></div><div class="content">'+item.answer+'</div></div></div>';
+							feeds+='</div></div></div>';
+						}
+						feeds+='</div>';
+						$('#feedback-table').find('.modal.content').html(feeds);
+						if (data.lastPage>1){
+							$('#feedback-table').find('.modal.content').append('<div class="ui pagination menu">');
+							for (i=1;i<=data.lastPage;i++){
+								if (i == data.currentPage){
+									$('#feedback-table').find('.modal.content .ui.pagination').append('<div class="active link item">'+i+'</div>');
+								}else{
+									$('#feedback-table').find('.content .ui.pagination').append('<div class="feedpage link item" data-page="'+i+'">'+i+'</div>');
+								}
+							}
+							$('.feedpage').click(load_feed);
+						}
+				}
+			}, 'json');
+		}
+
 		$('#feedback-list').click(function(){ 
 			var btn = $(this);
 			if (!btn.hasClass('loading')){
 				btn.addClass('loading');
 				$.get('{{ url("feedbacks") }}?ls={{ $apartment->ls }}',function(data){
 					if (data.success){
-						var feeds = "";
+						var feeds = '<div class="ui feed">';
 						for (i in data.data){
 							item = data.data[i];
-							feeds+='<h4 class="ui header">Отзыв от '+item.date+'</h4>'+item.text+'<div class="ui divider"></div>';
+							feeds+='<div class="event"><div class="label"><i class="pencil icon"></i></div><div class="content"><div class="date">';
+							feeds+=item.date;
+							feeds+='</div><div class="summary">';
+							feeds+=item.text;
+							if (item.answer)
+								feeds+='<div class="ui feed"><div class="event"><div class="label"><i class="green share icon"></i></div><div class="content">'+item.answer+'</div></div></div>';							
+							feeds+='</div></div></div>';
 						}
-						$('#feedback-table').find('.content').html(feeds);
-						if (data.lastPage>0){
-							$('#feedback-table').find('.content').append('<div class="ui pagination menu">');
+						feeds+='</div>';
+						$('#feedback-table').find('.modal.content').html(feeds);
+						if (data.lastPage>1){
+							$('#feedback-table').find('.modal.content').append('<div class="ui pagination menu">');
 							for (i=1;i<=data.lastPage;i++){
 								if (i == data.currentPage){
-									$('#feedback-table').find('.content .ui.pagination').append('<div class="active link item">'+i+'</div>');
+									$('#feedback-table').find('.modal.content .ui.pagination').append('<div class="active link item">'+i+'</div>');
 								}else{
-									$('#feedback-table').find('.content .ui.pagination').append('<div class="link item">'+i+'</div>');
+									$('#feedback-table').find('.content .ui.pagination').append('<div class="feedpage link item" data-page="'+i+'">'+i+'</div>');
 								}
 							}
+							$('.feedpage').click(load_feed);
 						}
 						$('#feedback-table').modal('setting','transition','fade up').modal('show');
 					}else{

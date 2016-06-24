@@ -41,6 +41,11 @@
 		Ввод показаний индивидуальных приборов учета
 	</div>
 	<div class="right item">
+		<div id="help-button" class="ui blue basic button">
+			<i class="help icon"></i>
+			Справка
+		</div>
+		&nbsp;&nbsp;&nbsp;
 		<a href="http://uez-lk.ru" class="ui basic button">
 			<i class="left arrow icon"></i>
 			Вернтуться на сайт
@@ -59,14 +64,28 @@
 	
 </div>
 
+<div id="help-dialog" class="ui long modal">
+	<i class="close icon"></i>
+	<div class="header">Справка</div>
+	<div class="content">
+		@include('help')
+	</div>
+	<div class="actions">
+		<div class="ui basic cancel red button">Закрыть</div>
+	</div>
+</div>
 
 
 @include('layouts.footer')
 </body>
 <script type="text/javascript">
+	var help_is_loaded = false;
 	$(function(){
 		$(window).resize(function(){
 			console.log($(window).width());
+		});
+		$('#help-button').click(function(){
+			$('#help-dialog').modal('setting','transition','fade up').modal('show');	
 		});
 	})
 </script>

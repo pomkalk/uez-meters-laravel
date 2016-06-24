@@ -14,6 +14,14 @@ class MainController extends Controller
 		$this->middleware('site.access');
 	}
 
+    public function help(Request $request)
+    {
+        if (!$request->ajax())
+            abort(404);
+
+        return view('help');
+    }
+
     public function index(Request $request){
         $c = $request->cookie('kvowner');
         if ($c){

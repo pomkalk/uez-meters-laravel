@@ -315,6 +315,7 @@ class MainController extends Controller
         if (!session()->has('can-save'))
             return json_encode(['success'=>false,'errors'=>['Ошибка прав доступа на получения списка отзывов.']]);
         session()->flash('can-save','1');
+        
         $feedbacks = \App\Feedback::where('ls', $request->input('ls'))->latest()->with('answer')->paginate(3);
         $data = [];
 
@@ -365,7 +366,15 @@ class MainController extends Controller
         $text = preg_replace('/<\/u(.*?)>/', '[/u$1]', $text);
         $text = htmlspecialchars($text);
 
+        $apartment = \App\Apartment::where('ls',$ls)->first();
+        $building = $apartment->building;
+        $street = $building->street;
+
+        $full_address = $street->prefix.'. '.$street->name.', д. '.$building->number.(($building->housing)?'/'.$building->housing:'').' кв. '.$apartment->number.(($apartment->part)?'/'.$apartment->part:'');
+
         $feed = new \App\Feedback();
+
+        $feed->address = $full_address;
         $feed->ls = $ls;
         $feed->text = $text;
         $feed->save();

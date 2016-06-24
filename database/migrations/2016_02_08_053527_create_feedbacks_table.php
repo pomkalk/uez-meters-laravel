@@ -14,6 +14,7 @@ class CreateFeedbacksTable extends Migration
     {
         Schema::create('feedbacks', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('address');
             $table->integer('ls');
             $table->text('text');
             $table->timestamp('read_at')->nullable();

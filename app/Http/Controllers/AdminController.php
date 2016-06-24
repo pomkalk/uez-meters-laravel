@@ -344,4 +344,21 @@ class AdminController extends Controller
             ]);
     }
 
+    public function getFeedbacks()
+    {
+        $feedbacks = \App\Feedback::latest()->with('answer')->paginate(20);
+        return view('admin.feedbacks', ['feedbacks'=>$feedbacks]);
+    }
+
+    public function getFeedbacksRead($id)
+    {
+        $feedback = \App\Feedback::findOrFail($id);
+        if (!$feedback->read_at){
+            $feedback->read_at = \Carbon\Carbon::now();
+            $feedback->save();
+        }
+
+        return view('admin.feedbacks.read', ['feedback'=>$feedback]);
+    }
+
 }

@@ -65,6 +65,8 @@ Route::group(['middleware' => ['admin']], function () {
     Route::get('admin/changepassword', 'AdminController@getChangepassword');
     Route::post('admin/changepassword', 'AdminController@postChangepassword');
 
+    Route::get('admin/feedbacks', 'AdminController@getFeedbacks');
+    Route::get('admin/feedbacks/{id}', 'AdminController@getFeedbacksRead');
 
     Route::get('admin/database', 'AdminController@getDatabase');
     Route::get('admin/database/trashed', 'AdminController@getDatabaseTrashed');

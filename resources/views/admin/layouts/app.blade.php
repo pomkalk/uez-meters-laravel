@@ -36,7 +36,11 @@
 				<ul class="nav nav-pills nav-stacked">
 					<li role="presentation" class="{{ Request::is('admin')?'active':'' }}"><a href="{{ url('admin') }}">Dashboard</a></li>
 					<li role="presentation" class="{{ Request::is('admin/database')?'active':'' }}"><a href="{{ url('admin/database') }}">База данных</a></li>
-					<li role="presentation" class="{{ Request::is('admin/feedback')?'active':'' }}"><a href="{{ url('admin/feedback') }}">Отзывы</a></li>
+					<li role="presentation" class="{{ Request::is('admin/feedbacks')?'active':'' }}"><a href="{{ url('admin/feedbacks') }}">Отзывы
+					@if (\App\Feedback::whereNull('read_at')->count()>0)
+					<span class="badge">{{ \App\Feedback::whereNull('read_at')->count() }}</span>
+					@endif
+					</a></li>
 					<li role="presentation" class="{{ Request::is('admin/settings')?'active':'' }}"><a href="{{ url('admin/settings') }}">Настройки</a></li>
 					<li role="presentation"><a href="{{ url('admin/logout') }}">Выйти</a></li>
 				</ul>

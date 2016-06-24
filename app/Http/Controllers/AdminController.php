@@ -385,4 +385,11 @@ class AdminController extends Controller
         return redirect('admin/feedbacks');
     }
 
+    public function getFeedbackDelAnswer($id)
+    {
+         $answer = \App\Answer::findOrFail($id);
+         $answer->delete();
+         return redirect('admin/feedbacks');
+    }
+
 }

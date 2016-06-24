@@ -321,14 +321,7 @@ class MainController extends Controller
 
         foreach($feedbacks as $feedback){
             $text = $feedback->text;
-            $text = preg_replace('/\[p(.*?)\]/', '<p$1>', $text);
-            $text = preg_replace('/\[\/p(.*?)\]/', '</p$1>', $text);
-            $text = preg_replace('/\[strong(.*?)\]/', '<strong$1>', $text);
-            $text = preg_replace('/\[\/strong(.*?)\]/', '</strong$1>', $text);
-            $text = preg_replace('/\[em(.*?)\]/', '<em$1>', $text);
-            $text = preg_replace('/\[\/em(.*?)\]/', '</em$1>', $text);
-            $text = preg_replace('/\[u(.*?)\]/', '<u$1>', $text);
-            $text = preg_replace('/\[\/u(.*?)\]/', '</u$1>', $text);
+
             $item = ['date'=>$feedback->created_at->format('d.m.Y'),'text'=>$text];
             if ($feedback->answer)
                 $item['answer']=$feedback->answer->text;
@@ -356,15 +349,7 @@ class MainController extends Controller
         $ls = $request->input('owner');
         $text = $request->input('feedtext');
 
-        $text = preg_replace('/<p(.*?)>/', '[p$1]', $text);
-        $text = preg_replace('/<\/p(.*?)>/', '[/p$1]', $text);
-        $text = preg_replace('/<strong(.*?)>/', '[strong$1]', $text);
-        $text = preg_replace('/<\/strong(.*?)>/', '[/strong$1]', $text);
-        $text = preg_replace('/<em(.*?)>/', '[em$1]', $text);
-        $text = preg_replace('/<\/em(.*?)>/', '[/em$1]', $text);
-        $text = preg_replace('/<u(.*?)>/', '[u$1]', $text);
-        $text = preg_replace('/<\/u(.*?)>/', '[/u$1]', $text);
-        $text = htmlspecialchars($text);
+
 
         $apartment = \App\Apartment::where('ls',$ls)->first();
         $building = $apartment->building;

@@ -68,6 +68,7 @@ Route::group(['middleware' => ['admin']], function () {
     Route::get('admin/feedbacks', 'AdminController@getFeedbacks');
     Route::get('admin/feedbacks/{id}', 'AdminController@getFeedbacksRead');
     Route::post('admin/feedbacks/save', 'AdminController@postFeedbacksSave');
+    Route::get('admin/feedbacks/delete/{id}', 'AdminController@getFeedbackDelAnswer');
 
     Route::get('admin/database', 'AdminController@getDatabase');
     Route::get('admin/database/trashed', 'AdminController@getDatabaseTrashed');

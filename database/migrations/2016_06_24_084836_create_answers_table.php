@@ -17,6 +17,7 @@ class CreateAnswersTable extends Migration
             $table->integer('feedback_id');
             $table->text('text');
             $table->timestamp('read_at')->nullable();
+            $table->softDeletes();            
             $table->timestamps();
         });
     }

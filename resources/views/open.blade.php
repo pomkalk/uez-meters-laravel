@@ -120,7 +120,7 @@
 @if (count($feedbacks)>0)
 <div id="feedback-notify" class="ui modal">
 	<i class="close icon"></i>
-	<div class="header">Вы получили ответ на отзывы</div>
+	<div class="header">Ответ на Ваш отзыв</div>
 	<div class="modal content">
 		<div class="ui feed">
 			@foreach ($feedbacks as $feedback)

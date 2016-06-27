@@ -170,12 +170,12 @@
 
 		$('#meters').submit(false);
 		$('#form-feedback').submit(false);
-		$('#feedtext').trumbowyg({
-			lang: 'ru',
-			btns:['bold','italic','underline'],
-			autogrow: true,
-			semantic: true,
-		});
+		// $('#feedtext').trumbowyg({
+		// 	lang: 'ru',
+		// 	btns:['bold','italic','underline'],
+		// 	autogrow: true,
+		// 	semantic: true,
+		// });
 		$('#save').click(function(){
 			var btn = $(this);
 			if (!btn.hasClass('loading')){

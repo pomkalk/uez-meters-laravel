@@ -95,7 +95,7 @@
 			</div>
 			<div class="field">
 				<label>Текст отзыва</label>
-				<div id="feedtext" rows="4"></div>
+				<textarea id="feedtext" name="feedtext" rows="4"></textarea>
 			</div>
 		</form>
 		<div class="ui error message transition hidden"></div>
@@ -191,9 +191,11 @@
 							btn.removeClass('disabled loading');
 							$('.ui.input.values').removeClass('disabled');
 						}else{
-							$('.ui.input.values').removeClass('error');
 							$('#errors-list').transition('hide');
-							//btn.hide();
+							btn.hide();
+							$('.ui.input.values').removeClass('error');
+							$('.ui.input.values').removeClass('disabled');
+							$('.ui.input.values input').prop('readonly',true);
 							$('#success-message').html(data.message);
 							$('#success-message').transition('fade in');												
 						}

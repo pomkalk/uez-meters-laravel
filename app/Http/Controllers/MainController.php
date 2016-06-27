@@ -97,7 +97,7 @@ class MainController extends Controller
                 'apartment'=>'required|exists:apartments,id',
                 'ls'=>'required|integer',
                 'space'=>'required|numeric',
-                //'g-recaptcha-response'=>'required',
+                'g-recaptcha-response'=>'required',
             ],[
                 'street.required'=>'Укажите улицу.',
                 'street.exists'=>'Вы указали неверную улицу.',
@@ -109,19 +109,19 @@ class MainController extends Controller
                 'ls.integer'=>'Лицевой счет это целое число.',
                 'space.required'=>'Укажите площадь помещения.',
                 'space.numeric'=>'Площадь помещение должно быть числом.',
-                //'g-recaptcha-response.required'=>'Нажмите на флажок подтверждения, что Вы не робот.',
+                'g-recaptcha-response.required'=>'Нажмите на флажок подтверждения, что Вы не робот.',
             ]);
 
-        //$curl = new \Curl\Curl();
-        //$curl->post('https://www.google.com/recaptcha/api/siteverify', [
-        //        'secret'=>env('RECAPTHCA_SECRET'),
-        //        'response'=>$request->input('g-recaptcha-response'),
-        //    ]);
-        //$response = $curl->response;
-        //if (!isset($response->success))
-        //    return redirect('/')->withErrors('Ошибка recaptcha, попробуйте еще раз.');
-        //if (!$response->success)
-        //    return redirect('/')->withErrors('Ошибка recaptcha, попробуйте еще раз.');
+        $curl = new \Curl\Curl();
+        $curl->post('https://www.google.com/recaptcha/api/siteverify', [
+               'secret'=>env('RECAPTHCA_SECRET'),
+               'response'=>$request->input('g-recaptcha-response'),
+           ]);
+        $response = $curl->response;
+        if (!isset($response->success))
+           return redirect('/')->withErrors('Ошибка recaptcha, попробуйте еще раз.');
+        if (!$response->success)
+           return redirect('/')->withErrors('Ошибка recaptcha, попробуйте еще раз.');
 
         $apartment = \App\Apartment::find($request->input('apartment'));
         if ($apartment->ls != $request->input('ls'))

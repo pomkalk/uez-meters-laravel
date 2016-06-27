@@ -392,4 +392,81 @@ class AdminController extends Controller
          return redirect('admin/feedbacks');
     }
 
+    public function getLook(Request $request)
+    {
+        $file = \App\MeterFile::where('active',1)->first();
+        if (!$file)
+            return back()->withErrors('Необходимо активировать базу.');
+
+
+
+        $searching = !empty($request->input('street',''))||!empty($request->input('building',''))||!empty($request->input('apartment',''))||!empty($request->input('ls',''));
+
+
+        if ($searching){
+            if (!empty($request->input('ls',''))){
+                $apartments = \App\Apartment::where('ls','like','%'.$request->input('ls').'%')->with('building.street')->paginate(30);
+            }else{
+                $apartment = $request->input('apartment',false);
+                $building = $request->input('building',false);
+                $street = $request->input('street',false);
+
+                $apartments = \App\Apartment::where('number',$apartment)->whereHas('building', function($query) use ($building){
+                    $query->where('number',$building);
+                })->with('building.street')->paginate(30);
+
+                $apartments = \App\Apartment::query();
+                if ($apartment)
+                    $apartments->where('number',$apartment);
+
+                if ($building)
+                    $apartments->whereHas('building', function($query) use ($building){
+                        $query->where('number',$building);
+                    });
+
+                if ($street)
+                    $apartments->whereHas('building.street', function($query) use ($street){
+                        $query->where('name','like', '%'.$street.'%');
+                    });                
+
+                $apartments = $apartments->with('building.street')->paginate(30);
+            }
+        }else{
+            $apartments = \App\Apartment::with('building.street')->paginate(30);        
+        }
+
+        return view('admin.look', ['apartments'=>$apartments, 'searching'=>$searching]);
+    }
+
+    public function getLookDetail($ls)
+    {
+        $file = \App\MeterFile::where('active',1)->first();
+        if (!$file)
+            return back()->withErrors('Необходимо активировать базу.');
+
+        $apartment = \App\Apartment::where('ls',$ls)->first();
+        if (!$apartment)
+            abort(404);
+        $building = $apartment->building;
+        $street = $building->street;
+
+        $full_address = $street->prefix.'. '.$street->name.', д. '.$building->number.(($building->housing)?'/'.$building->housing:'').' кв. '.$apartment->number.(($apartment->part)?'/'.$apartment->part:'');
+
+        $meters = \App\Meter::where('apartment_id', $apartment->id)->orderBy('service_id')->get();
+        $meter_ids = [];
+        foreach($meters as $m)
+            array_push($meter_ids, $m->id);
+        $old_values = \App\MeterValue::where('file_id',$file->id)->whereIn('meter_id',$meter_ids)->get();
+        $meter_values = [];
+        foreach($old_values as $ov)
+            $meter_values[$ov->meter_id] = $ov->value;
+
+        return view('admin.detail', [
+                'address' => $full_address,
+                'apartment'=>$apartment,
+                'meters'=>$meters,
+                'meter_values'=>$meter_values,
+            ]);        
+    }
+
 }

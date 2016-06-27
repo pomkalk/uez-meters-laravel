@@ -18,7 +18,7 @@
 				<tr{!! (!$feedback->read_at)?' class="info"':'' !!}>
 					<td>
 					@if ($feedback->answer)
-					<span class="glyphicon glyphicon-envelope" aria-hidden="true" style="color: {{ $feedback->answer->read_at?'green':'black'  }};"></span>
+					<span data-toggle="tooltip" data-placement="top" title="Отправлен {{ $feedback->answer->updated_at->format('d.m.Y') }}" class="glyphicon glyphicon-envelope" aria-hidden="true" style="color: {{ $feedback->answer->read_at?'green':'black'  }};"></span>
 					@endif
 					</td>
 					<td>{{ $feedback->created_at->format('d.m.Y') }}</td>
@@ -34,4 +34,10 @@
 		@endif
 	</div>
 </div>
+
+<script type="text/javascript">
+	$(function(){
+		$('[data-toggle="tooltip"]').tooltip();
+	})
+</script>
 @stop

@@ -44,12 +44,13 @@
 						<td>{{ $file->name }}</td>
 						<td>{{ $file->created_at }}</td>
 						<td>
-							@if ((!$file->active) && (!$isTrash))
-								<a href="{{ url('admin/database/activate') }}/{{ $file->id }}">Активировать</a>|
-							@endif
 							@if ($isTrash)
 							<a href="{{ url('admin/database/restore') }}/{{ $file->id }}">Восстановить</a>
 							@else
+								@if ($file->active)
+							<a href="{{ url('admin/database/look') }}">Просмотреть</a>|
+								@else
+							<a href="{{ url('admin/database/activate') }}/{{ $file->id }}">Активировать</a>|							@endif
 							<a href="{{ url('admin/database/delete') }}/{{ $file->id }}">Удалить</a>
 							@endif
 						</td>

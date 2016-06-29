@@ -335,7 +335,7 @@ class AdminController extends Controller
             $response.=$line;
         }
 
-        $response = iconv('utf-8','cp1251', $response);
+        //$response = iconv('utf-8','cp1251', $response);
 
         return response($response)->withHeaders([
                 'Content-type'=>'text/html; charset=utf-8',

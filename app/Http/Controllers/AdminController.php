@@ -253,7 +253,7 @@ class AdminController extends Controller
                                 'service_id'=>(string)$xml_meter['service'],
                                 'status_id'=>(string)$xml_meter['status'],
                                 'last_date'=>Carbon::parse((string)$xml_meter['last_date']),
-                                'last_value'=>(string)$xml_meter['last_value'],
+                                'last_value'=>str_replace(",", ".", (string)$xml_meter['last_value']),
                             ];
                             array_push($meters, $meter);
                         }

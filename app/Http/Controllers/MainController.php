@@ -179,7 +179,7 @@ class MainController extends Controller
         }
 
         $feedbacks_count = \App\Feedback::where('ls', $apartment->ls)->count();
-        $feedbacks = \App\Feedback::whereHas('answer', function($query) { $query->whereNull('read_at'); })->get();
+        $feedbacks = \App\Feedback::where('ls', $apartment->ls)->whereHas('answer', function($query) { $query->whereNull('read_at'); })->get();
         foreach($feedbacks as $feedback){
             $feedback->answer->read_at = \Carbon\Carbon::now();
             $feedback->answer->save();

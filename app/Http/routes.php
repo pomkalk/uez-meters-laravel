@@ -85,4 +85,8 @@ Route::group(['middleware' => ['admin']], function () {
 
     Route::get('admin/database/download', 'AdminController@getDownloadCsv');
 
+    Route::get('admin/logs', 'AdminController@getLogs');
+    Route::get('admin/logs/read/{file}', 'AdminController@getLogsRead');
+    Route::get('admin/logs/delete/{file}', 'AdminController@getLogsDelete');
+
 });

@@ -469,4 +469,34 @@ class AdminController extends Controller
             ]);        
     }
 
+    public function getLogs()
+    {
+
+        $logs = array_map(function($v){
+            return basename($v,'.log');
+        }, glob(storage_path("logs".DIRECTORY_SEPARATOR."*.log")));
+        return view('admin.logs', ['logs'=>$logs]);
+    }
+
+    public function getLogsRead($file)
+    {
+       $filename =  storage_path("logs".DIRECTORY_SEPARATOR.$file.'.log');
+       if (file_exists($filename)){
+            $content = file_get_contents($filename);
+            $del = $file;
+       }else{
+            $content = "Файл не найден.";
+       }
+       return view('admin.logs.read', ['content'=>$content, 'file'=>$del]);
+    }
+
+    public function getLogsDelete($file)
+    {
+       $filename =  storage_path("logs".DIRECTORY_SEPARATOR.$file.'.log');
+       if (file_exists($filename)){
+           unlink($filename);   
+       }
+       return redirect('admin/logs');
+    }    
+
 }

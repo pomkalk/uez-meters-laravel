@@ -43,6 +43,7 @@
 					@endif
 					</a></li>
 					<li role="presentation" class="{{ Request::is('admin/settings')?'active':'' }}"><a href="{{ url('admin/settings') }}">Настройки</a></li>
+					<li role="presentation" class="{{ Request::is('admin/logs')?'active':'' }}"><a href="{{ url('admin/logs') }}">Logs</a></li>
 					<li role="presentation"><a href="{{ url('admin/logout') }}">Выйти</a></li>
 				</ul>
 			</div>

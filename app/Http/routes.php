@@ -80,6 +80,7 @@ Route::group(['middleware' => ['admin']], function () {
     Route::get('admin/database/activate/{id}', 'AdminController@getActivate');
     Route::get('admin/database/look', 'AdminController@getLook');
     Route::get('admin/database/look/{ls}', 'AdminController@getLookDetail');
+    Route::post('admin/database/look/update', 'AdminController@postSaveDetail');
 
     Route::get('admin/database/restore/{id}', 'AdminController@getRestore');
 

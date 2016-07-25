@@ -33,7 +33,11 @@
 							<td>{{ $meter->last_date }}</td>
 							<td>{{ $meter->last_value }}</td>
 							<td>
-								<div>{!! array_key_exists($meter->id, $meter_values)?$meter_values[$meter->id]:'' !!}</div>
+								@if (array_key_exists($meter->id, $meter_values))
+								<a href="#" class="value-fields" data-type="text" data-emptytext="" data-pk='{{ $meter_values[$meter->id]->id }}' data-url="{{url('admin/database/look/update')}}" data-value="{{ $meter_values[$meter->id]->value }}" data-params="{_token:'{{csrf_token()}}'}"></a>
+								@else
+								<a href="#" class="value-fields" data-type="text" data-emptytext="Пусто" data-pk='' data-url="{{url('admin/database/look/update')}}" data-value="" data-params="{_token:'{{csrf_token()}}', file_id: '{{ $file }}', meter_id: '{{ $meter->id }}'}"></a>
+								@endif
 							</td>
 						</tr>
 					@endif
@@ -44,4 +48,12 @@
 	</div>
 </div>
 
+<!-- <div>{!! array_key_exists($meter->id, $meter_values)?$meter_values[$meter->id]:'' !!}</div> -->
+
+
+<script type="text/javascript">
+	$(function(){
+		$('.value-fields').editable();
+	})
+</script>
 @stop

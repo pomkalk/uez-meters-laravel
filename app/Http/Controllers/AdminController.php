@@ -459,14 +459,38 @@ class AdminController extends Controller
         $old_values = \App\MeterValue::where('file_id',$file->id)->whereIn('meter_id',$meter_ids)->get();
         $meter_values = [];
         foreach($old_values as $ov)
-            $meter_values[$ov->meter_id] = $ov->value;
+            $meter_values[$ov->meter_id] = $ov;
 
         return view('admin.detail', [
                 'address' => $full_address,
                 'apartment'=>$apartment,
                 'meters'=>$meters,
                 'meter_values'=>$meter_values,
+                'file'=>$file->id,
             ]);        
+    }
+
+    public function postSaveDetail(Request $request)
+    {
+        if ($request->input('pk', false)){
+            $value = \App\MeterValue::find($request->input('pk'));
+        }else{
+            $value = new \App\MeterValue();
+            $value->file_id = $request->input('file_id');
+            $value->meter_id = $request->input('meter_id');
+        }
+
+        if ($request->input('value') == ''){
+            $value->delete();
+            return response('Очищен',200);    
+        }
+        $nv = str_replace(",", ".", (string)$request->input('value'));
+
+        $value->date = \Carbon\Carbon::now();
+        $value->value = $nv;
+
+        $value ->save();
+        return response('',200);
     }
 
     public function getLogs()

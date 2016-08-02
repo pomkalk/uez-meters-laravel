@@ -61,6 +61,8 @@ Route::group(['middleware' => ['admin']], function () {
 	
     Route::get('admin', 'AdminController@getAdmin');
 
+    Route::get('admin/dashboard/values', 'DashboardController@getValues');
+
     Route::get('admin/settings', 'AdminController@getSettings');
     Route::post('admin/settings', 'AdminController@postSettings');
 

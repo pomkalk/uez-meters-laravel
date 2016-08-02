@@ -16,6 +16,8 @@ class CreateMeterValuesTable extends Migration
             $table->increments('id');
             $table->integer('file_id')->unsigned();
             $table->integer('meter_id')->unsigned();
+            $table->integer('ls')->unsigned();
+            $table->integer('meter_code')->unsigned();
             $table->timestamp('date');
             $table->double('value', 15, 5);
             $table->timestamps();

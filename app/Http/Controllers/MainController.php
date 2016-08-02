@@ -285,6 +285,8 @@ class MainController extends Controller
                     $new_value = new \App\MeterValue();
                     $new_value->file_id = $file_id;
                     $new_value->meter_id = $key;
+                    $new_value->ls = $apartment->ls;
+                    $new_value->meter_code = $meter->meter_id;
                     $new_value->date = \Carbon\Carbon::now();
                     $new_value->value = $value;    
                 }
@@ -300,10 +302,11 @@ class MainController extends Controller
                     $new_value = new \App\MeterValue();
                     $new_value->file_id = $file_id;
                     $new_value->meter_id = $key;
+                    $new_value->ls = $apartment->ls;
+                    $new_value->meter_code = $meter->meter_id;                    
                     $new_value->date = \Carbon\Carbon::now();
                     $new_value->value = $value;    
                 }
-
                 array_push($saving, $new_value);
             }
         }

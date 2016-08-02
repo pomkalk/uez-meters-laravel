@@ -10,6 +10,8 @@ use Illuminate\Foundation\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
+use Mail;
+
 class Handler extends ExceptionHandler
 {
     /**
@@ -34,6 +36,14 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $e)
     {
+        if (!$e instanceof NotFoundHttpException){
+            if (env('NOTIFY_EMAIL',false))
+                Mail::send('mails.erroremail', ['errormessage'=>$e->getMessage()], function($m){
+                    $m->from('noreply@uez-lk.ru', 'Счетчики УЕЗ');
+                    $m->to(env('NOTIFY_EMAIL'))->subject('Ошибка на сайте.');
+                });
+        }
+
         return parent::report($e);
     }
 
